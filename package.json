@@ -1,0 +1,14 @@
+{
+  "name": "sn21",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/filesystem": "^6.0.1",
+    "@capacitor/share": "^6.0.2",
+    "@fontsource/reem-kufi": "^5.0.0",
+    "@fontsource/tajawal": "^5.0.0"
+  }
+}

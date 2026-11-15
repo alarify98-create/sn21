@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SN 21 - محلي وسحابي</title>
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--bg1:#000;--bg2:#000;--card:rgba(255,255,255,.07);--line:rgba(245,197,24,.45);--gold:#f5c518;--txt:#f6f1e1;--mut:#b5ad98;--red:#ff8a98;--grn:#7be0a4;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:#000;color:var(--txt);font-family:Tajawal,system-ui,sans-serif;padding:0 14px 96px}
+h1{font-family:'Reem Kufi',serif;color:var(--gold);font-size:46px;letter-spacing:3px;margin:18px 0 0;text-align:center;direction:ltr}
+.sub{text-align:center;color:var(--gold);font-size:13px;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:12px;font-weight:bold}
+button,select,input,textarea{font:inherit;color:var(--txt)}
+button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
+.g{background:var(--gold);color:#2a1a00;font-weight:700}
+.o{background:transparent;border:1px solid var(--line);color:var(--gold)}
+select,input,textarea{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:9px;width:100%}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
+.card.new{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
+.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
+.tr{font-weight:700;font-size:18px;color:var(--gold);width:55%}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.g4 input{padding:8px 4px;text-align:center}
+label.l{display:block;font-size:12px;color:var(--mut);margin:0 0 2px}
+.im{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.pv{width:64px;height:64px;object-fit:cover;border-radius:10px}
+.pb{border:1px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--gold);font-size:13px;cursor:pointer}
+.acts{display:flex;gap:8px;margin-top:10px}.acts .g{flex:1}
+.mut{color:var(--mut);text-align:center;margin:30px 0}
+.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.row:last-child{border:0}
+h3{margin:0 0 8px;color:var(--gold)}
+.tot{background:rgba(224,184,74,.16)}
+nav{position:fixed;inset:auto 0 0 0;display:flex;background:#000;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{flex:1;background:none;color:var(--mut);border-radius:0;padding:15px}
+nav button.on{color:var(--gold);font-weight:700}
+#m{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;z-index:9}
+.box{background:#0d0d0d;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px;width:100%;max-width:520px}
+.bt{display:flex;gap:8px;margin-top:14px}.bt button{flex:1}
+#toast{position:fixed;bottom:calc(66px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--gold);color:#2a1a00;padding:7px 18px;border-radius:20px;font-size:14px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:8}
+.mini{display:flex;align-items:center;gap:10px;cursor:pointer}.bc{cursor:pointer}.pb{background:transparent}
+.top .tr{width:100%}
+.big{text-align:center}.big b{display:block;font-size:46px;color:var(--gold);line-height:1.1}.big .l{font-size:14px;color:var(--mut)}
+.pb{position:relative;overflow:hidden}.pb input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.ln{display:grid;grid-template-columns:1.2fr 1fr .8fr auto;gap:6px;margin-bottom:6px}.ln select,.ln input{padding:8px 4px}.x{padding:6px 10px}
+.meas-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5px;margin-bottom:6px}
+.meas-row input, .meas-row select{padding:8px 4px;font-size:13px}
+.tab-bar{display:flex;gap:5px;margin:10px 0}
+.tab-bar button{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut);border-radius:10px;padding:10px;font-weight:700}
+.tab-bar button.active{background:var(--gold);color:#2a1a00;border-color:var(--gold)}
+.sentence-preview{background:rgba(0,0,0,.4);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin-top:8px;font-size:13px;color:var(--gold);text-align:center;direction:rtl}
+</style>
+</head>
+<body>
+<h1>SN 21</h1>
+<p class="sub">⚡ يعمل بدون إنترنت (التخزين المحلي الآمن)</p>
+<div id="app"></div>
+
+<nav>
+  <button id="n1" onclick="go('b')">بدء العمل</button>
+  <button id="n2" onclick="go('s')">المجموع</button>
+  <button id="n3" onclick="go('l')">القياسات</button>
+</nav>
+<div id="m"></div><div id="toast"></div>
+
+<script>
+let S={batches:[],cur:null,page:'b',scope:'all',draft:false,activeTab:'خواتم'},db;
+const P={},$=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9),num=v=>parseFloat(v)||0;
+const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cb=()=>S.batches.find(b=>b.id==S.cur)||S.batches[0];
+
+// نظام التخزين المحلي السريع (يعمل بدون انترنت 100%)
+function idbOpen(){return new Promise(r=>{try{const q=indexedDB.open('sn21v_local',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
+async function load(){db=await idbOpen();if(!db)return null;return new Promise(r=>{try{const g=db.transaction('k').objectStore('k').get('s');g.onsuccess=()=>r(g.result);g.onerror=()=>r(null)}catch(e){r(null)}})}
+function save(){try{db&&db.transaction('k','readwrite').objectStore('k').put({batches:S.batches,cur:S.cur,lin:S.lin},'s')}catch(e){}}
+
+function toast(t){const e=$('#toast');e.textContent=t||'تم الحفظ محلياً ✓';e.style.opacity=1;clearTimeout(window._t);window._t=setTimeout(()=>e.style.opacity=0,1400)}
+function modal(h){$('#m').innerHTML='<div class="box">'+h+'</div>';$('#m').style.display='flex'}
+function cls(){$('#m').style.display='none'}
+function ask(t,yes,fn){window._f=fn;modal('<p>'+t+'</p><div class="bt"><button class="g" onclick="_f();cls()">'+yes+'</button><button class="o" onclick="cls()">إلغاء</button></div>')}
+function note(t){modal('<p>'+t+'</p><div class="bt"><button class="o" onclick="cls()">حسناً</button></div>')}
+function go(p){S.page=p;R()}
+
+function shrink(f){return new Promise(r=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const k=Math.min(1,480/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL('image/jpeg',.7))};i.onerror=()=>r('');i.src=u})}
+async function pimg(id,inp){if(!inp.files[0])return;const d=await shrink(inp.files[0]);P[id]=d;const p=$('#c_'+id+' .pv');p.src=d;p.style.display='block'}
+
+function card(r,isNew){const i=r.id,f=(k,l)=>`<div><label class="l">${l}</label><input data-k="${k}" type="number" step="any" inputmode="decimal" value="${r[k]||''}"></div>`;
+return `<div class="card${isNew?' new':''}" id="c_${i}"><div class="top"><input class="tr" data-k="tree" value="${esc(r.tree)}" placeholder="رقم الشجرة"></div>
+<label class="l">القطع (النوع، عادي أو مبطن، العدد)</label><div class="lns">${(r.lines&&r.lines.length?r.lines:[{m:'عادي'}]).map(ln).join('')}</div><button class="o" style="margin:2px 0 10px" onclick="addL('${i}')">＋ سطر</button><div class="g4" style="grid-template-columns:repeat(3,1fr)">${f('cast','تلف الصبة')}${f('vib','تلف الهزاز')}${f('sold','تلف اللحام')}</div>
+<div class="im"><img class="pv" alt="" src="${r.img||''}" style="display:${r.img?'block':'none'}"><label class="pb">📷 صورة العمل<input type="file" accept="image/*" onchange="pimg('${i}',this)"></label></div>
+<textarea data-k="info" rows="2" placeholder="معلومات">${esc(r.info)}</textarea>
+
+<div class="acts"><button class="g" onclick="sv('${i}')">حفظ</button><button class="o" onclick="del('${i}')">${isNew?'إلغاء':'حذف'}</button>${isNew?'':'<button class="o" onclick="S.ex=null;R()">إغلاق</button>'}</div></div>`}
+
+function sv(id){const c=$('#c_'+id),g=k=>c.querySelector('[data-k="'+k+'"]').value,t=g('tree').trim();if(!t){c.querySelector('[data-k="tree"]').focus();toast('اكتب رقم الشجرة');return}
+ const d={tree:t,lines:rd(c),pcsN:tot(rd(c),'عادي'),pcsL:tot(rd(c),'مبطن'),cast:num(g('cast')),vib:num(g('vib')),sold:num(g('sold')),info:g('info').trim()},b=cb();
+ if(id=='new'){b.rows.unshift({id:uid(),img:P.new||'',...d});S.draft=false;delete P.new;save();R()}
+ else{const r=b.rows.find(x=>x.id==id);Object.assign(r,d);if(P[id]!==undefined){r.img=P[id];delete P[id]}save();S.ex=null;R()}
+ toast()}
+
+function del(id){if(id=='new'){S.draft=false;delete P.new;R();return}ask('حذف هذه الشجرة؟','نعم، احذف',()=>{const b=cb();b.rows=b.rows.filter(x=>x.id!=id);save();R()})}
+const sum=(a,k)=>Math.round(a.reduce((s,x)=>s+(x[k]||0),0)*1000)/1000;
+
+async function exp(){
+  const json=JSON.stringify({app:'sn21',batches:S.batches,lin:S.lin});
+  const name='sn21-backup-'+new Date().toISOString().slice(0,10)+'.json';
+  try{
+    const C=window.Capacitor;
+    if(C&&C.isNativePlatform&&C.isNativePlatform()){
+      const {Filesystem,Share}=C.Plugins;
+      const r=await Filesystem.writeFile({path:name,data:json,directory:'CACHE',encoding:'utf8'});
+      await Share.share({title:name,url:r.uri,dialogTitle:'حفظ النسخة الاحتياطية'});
+      return;
+    }
+    const a=document.createElement('a');
+    a.href='data:text/json;charset=utf-8,'+encodeURIComponent(json);
+    a.download=name;document.body.appendChild(a);a.click();a.remove();
+    toast('تم تصدير النسخة الاحتياطية ✓');
+  }catch(e){
+    if(String(e&&e.message||e).toLowerCase().includes('cancel'))return;
+    note('تعذّر حفظ الملف.');
+  }
+}
+
+function imp(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{let d;try{d=JSON.parse(r.result)}catch(e){}
+ if(!d||d.app!='sn21'||!Array.isArray(d.batches)||!d.batches.length){note('الملف غير صالح. اختر ملف نسخة احتياطية من SN 21.');return}
+ ask('سيتم استبدال بياناتك الحالية بالنسخة ('+d.batches.length+' دفعة). متابعة؟','نعم، استعد',()=>{S.batches=d.batches;mig(S.batches);flat();if(d.lin)S.lin=d.lin;S.open=null;S.draft=false;save();R()})};r.readAsText(f)}
+
+function R(){const p=S.page;['b','s','l'].forEach((k,i)=>$('#n'+(i+1)).className=p==k?'on':'');p=='s'?Rs():p=='l'?Rl():Rb2()}
+function Rs(){$('#n1').className='';$('#n2').className='on';
+ const rows=S.batches.flatMap(x=>x.rows),n=sum(rows,'pcsN'),l=sum(rows,'pcsL');
+ $('#app').innerHTML=`<div class="card big"><div class="l">قطع العمل العادي</div><b>${n}</b>${bk2(rows,'عادي')}</div><div class="card big"><div class="l">قطع العمل المبطن</div><b>${l}</b>${bk2(rows,'مبطن')}</div><div class="card big tot"><div class="l">إجمالي القطع</div><b>${Math.round((n+l)*1000)/1000}</b></div><p class="mut">من ${rows.length} شجرة</p>`}
+function flat(){if(S.batches.length>1)S.batches=[{id:S.batches[0].id,name:'العمل',rows:S.batches.flatMap(x=>x.rows)}];S.cur=S.batches[0].id}
+function clr(){ask('سيتم حذف كل الأشجار الحالية. صدّر نسخة احتياطية أولاً إن أردت. متابعة؟','نعم، امسح',()=>{S.batches[0].rows=[];S.ex=null;S.draft=false;save();R()})}
+function Rb2(){$('#n1').className='on';$('#n2').className='';const b=S.batches[0];S.cur=b.id;
+ $('#app').innerHTML=`<button class="g" style="width:100%" onclick="S.draft=true;S.ex=null;R();$('#c_new').scrollIntoView()">＋ إضافة شجرة</button><p class="mut" style="margin:10px 0 0">${b.rows.length} شجرة</p>`+(S.draft?card({id:'new'},true):'')+b.rows.map(r=>S.ex==r.id?card(r):mini(r)).join('')+(!S.draft&&!b.rows.length?'<p class="mut">لا توجد أشجار بعد. اضغط ＋ إضافة شجرة</p>':'')+`<div class="card"><h3>نسخة احتياطية</h3><div class="bt" style="margin:0"><button class="g" onclick="exp()">تصدير</button><label class="pb" style="flex:1;text-align:center;padding:10px 14px;font-size:16px">استعادة<input id="imp" type="file" accept=".json,application/json" onchange="imp(this)"></label></div><button class="o" style="width:100%;margin-top:8px" onclick="clr()">بدء صبة جديدة (مسح الأشجار)</button></div>`}
+
+const TY=['خواتم','محابس','دبل'];
+function ln(l){return '<div class="ln"><select data-l="t">'+['',...TY].map(o=>'<option value="'+o+'"'+(o==(l.t||'')?' selected':'')+'>'+(l.t||o||'النوع')+'</option>').join('')+'</select><select data-l="m"><option'+(l.m!='مبطن'?' selected':'')+'>عادي</option><option'+(l.m=='مبطن'?' selected':'')+'>مبطن</option></select><input data-l="n" type="number" step="any" inputmode="decimal" placeholder="العدد" value="'+(l.n||'')+'"><button class="o x" onclick="this.parentNode.remove()">✕</button></div>'}
+function addL(id){$('#c_'+id+' .lns').insertAdjacentHTML('beforeend',ln({m:'عادي'}))}
+function rd(c){return [...c.querySelectorAll('.ln')].map(e=>({t:e.querySelector('[data-l=t]').value,m:e.querySelector('[data-l=m]').value,n:num(e.querySelector('[data-l=n]').value)})).filter(l=>l.n||l.t)}
+function tot(ls,m){return sum(ls.filter(l=>l.m==m),'n')}
+function lt(r){return (r.lines||[]).map(l=>l.m+' '+l.n+' '+(l.t||'')).join(' · ')||'بدون قطع'}
+function bk2(rows,m){const ls=rows.flatMap(r=>r.lines||[]).filter(l=>l.m==m),o=TY.map(t=>[t,sum(ls.filter(l=>l.t==t),'n')]).filter(x=>x[1]),u=sum(ls.filter(l=>!TY.includes(l.t)),'n');if(u)o.push(['غير محدد',u]);return o.map(x=>'<div class="row"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')}
+
+const SIZES = ['', 'صغير', 'وسط', 'كبير'];
+const MEASURES = ['', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6', '6.1', '6.2', '6.3', '6.4', '6.5'];
+
+function Rl(){
+  const v = S.lin || {};
+  const active = S.activeTab || 'خواتم';
+
+  let h = `<h2 style="color:var(--gold);text-align:center;margin:8px 0 4px">القياسات والأنواع</h2>`;
+  h += `<div class="tab-bar">
+    ${TY.map(t => `<button class="${active === t ? 'active' : ''}" onclick="S.activeTab='${t}';Rl()">${t}</button>`).join('')}
+  </div>`;
+
+  let items = (v[active] && Array.isArray(v[active])) ? v[active] : [{tp:'', sz:'', val:''}];
+  
+  h += `<div class="card">
+    <div class="top"><h3 style="margin:0;color:var(--gold);font-size:18px">${active}</h3></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5px;font-size:11px;color:var(--mut);margin-bottom:4px;padding:0 2px">
+      <span>النوع</span><span>الحجم</span><span>القياس</span><span></span>
+    </div>
+    <div id="meas_container">
+      ${items.map(it => measRow(it)).join('')}
+    </div>
+    <button class="o" style="width:100%;margin-top:6px" onclick="addMeasRow()">＋ إضافة قياس جديد لـ ${active}</button>
+  </div>`;
+
+  let sentenceText = items.filter(x=>x.tp||x.sz||x.val).map(x => `${active} [نوع: ${x.tp||'-'} | حجم: ${x.sz||'-'} | قياس: ${x.val||'-'}]`).join(' ، ');
+  h += `<div class="sentence-preview"><span style="display:block;font-size:11px;color:var(--mut)">معاينة الجملة المحفوظة:</span>${sentenceText || 'لا توجد قياسات مضافة بعد'}</div>`;
+
+  h += `<button class="g" style="width:100%;margin-top:12px" onclick="svL()">حفظ قياسات (${active})</button>
+        <p class="mut" style="margin:10px 0 0">${v.d ? 'آخر حفظ: ' + esc(v.d) : ''}</p>`;
+  
+  $('#app').innerHTML = h;
+}
+
+function measRow(it){
+  return `<div class="meas-row">
+    <input type="text" placeholder="النوع" data-k="tp" value="${esc(it.tp||'')}" />
+    <select data-k="sz">
+      ${SIZES.map(s => `<option value="${s}" ${s === (it.sz||'') ? 'selected' : ''}>${s || 'اختر الحجم'}</option>`).join('')}
+    </select>
+    <select data-k="val">
+      ${MEASURES.map(m => `<option value="${m}" ${m === (it.val||'') ? 'selected' : ''}>${m || 'اختر القياس'}</option>`).join('')}
+    </select>
+    <button class="o x" onclick="this.parentNode.remove();">✕</button>
+  </div>`;
+}
+
+function addMeasRow(){
+  const container = document.getElementById('meas_container');
+  container.insertAdjacentHTML('beforeend', measRow({tp:'', sz:'', val:''}));
+}
+
+function svL(){
+  if(!S.lin) S.lin = {};
+  const active = S.activeTab || 'خواتم';
+  const rows = [...document.querySelectorAll('div.meas-row')];
+  
+  S.lin[active] = rows.map(r => ({
+    tp: r.querySelector('[data-k="tp"]').value.trim(),
+    sz: r.querySelector('[data-k="sz"]').value,
+    val: r.querySelector('[data-k="val"]').value
+  })).filter(x => x.tp || x.sz || x.val);
+
+  S.lin.d = new Date().toISOString().slice(0, 10);
+  save();
+  Rl();
+  toast('تم حفظ قياسات ' + active + ' بنجاح ✓');
+}
+
+function mig(a){a.forEach(b=>b.rows.forEach(r=>{if(r.pcsN===undefined){const l=r.type=='مبطن';r.pcsN=l?0:(r.pcs||0);r.pcsL=l?(r.pcs||0):0}if(!r.lines){r.lines=[];if(r.pcsN||r.tN)r.lines.push({t:r.tN||'',m:'عادي',n:r.pcsN||0});if(r.pcsL||r.tL)r.lines.push({t:r.tL||'',m:'مبطن',n:r.pcsL||0})}}))}
+function mini(r){const t=Math.round(((r.cast||0)+(r.vib||0)+(r.sold||0))*1000)/1000;return `<div class="card mini" onclick="S.ex='${r.id}';R()">${r.img?`<img class="pv" alt="" src="${r.img}" style="width:48px;height:48px">`:''}<div style="flex:1"><b style="color:var(--gold);font-size:17px">شجرة ${esc(r.tree)}</b><div style="font-size:12px;color:var(--mut)">${lt(r)} · تلف ${t}</div></div><span style="color:var(--mut)">تعديل ‹</span></div>`}
+
+// التشغيل الفوري بدون الحاجة للإنترنت
+(async()=>{
+  const d=await load();
+  if(d&&d.batches&&d.batches.length){
+    S.batches=d.batches;
+    S.lin=d.lin||{};
+    mig(S.batches);
+    flat();
+  }else{
+    S.batches=[{id:uid(),name:'العمل',rows:[]}];
+    S.cur=S.batches[0].id;
+  }
+  R();
+})();
+</script>
+</body>
+</html>
