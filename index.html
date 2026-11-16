@@ -3,15 +3,17 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SN 21 - محلي وسحابي</title>
+<title>SN 21 - مزامنة ذكية</title>
 <link rel="stylesheet" href="fonts.css">
+
+
 <style>
 :root{--bg1:#000;--bg2:#000;--card:rgba(255,255,255,.07);--line:rgba(245,197,24,.45);--gold:#f5c518;--txt:#f6f1e1;--mut:#b5ad98;--red:#ff8a98;--grn:#7be0a4;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;min-height:100vh;background:#000;color:var(--txt);font-family:Tajawal,system-ui,sans-serif;padding:0 14px 96px}
 h1{font-family:'Reem Kufi',serif;color:var(--gold);font-size:46px;letter-spacing:3px;margin:18px 0 0;text-align:center;direction:ltr}
-.sub{text-align:center;color:var(--gold);font-size:13px;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:12px;font-weight:bold}
+.sub{text-align:center;color:var(--grn);font-size:13px;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:12px;font-weight:bold}
 button,select,input,textarea{font:inherit;color:var(--txt)}
 button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
 .g{background:var(--gold);color:#2a1a00;font-weight:700}
@@ -55,7 +57,7 @@ nav button.on{color:var(--gold);font-weight:700}
 </head>
 <body>
 <h1>SN 21</h1>
-<p class="sub">⚡ يعمل بدون إنترنت (التخزين المحلي الآمن)</p>
+<p id="syncStatus" class="sub">⚡ يعمل محلياً (جاهز للمزامنة عند الاتصال)</p>
 <div id="app"></div>
 
 <nav>
@@ -71,12 +73,88 @@ const P={},$=s=>document.querySelector(s),uid=()=>Math.random().toString(36).sli
 const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const cb=()=>S.batches.find(b=>b.id==S.cur)||S.batches[0];
 
-// نظام التخزين المحلي السريع (يعمل بدون انترنت 100%)
-function idbOpen(){return new Promise(r=>{try{const q=indexedDB.open('sn21v_local',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
-async function load(){db=await idbOpen();if(!db)return null;return new Promise(r=>{try{const g=db.transaction('k').objectStore('k').get('s');g.onsuccess=()=>r(g.result);g.onerror=()=>r(null)}catch(e){r(null)}})}
-function save(){try{db&&db.transaction('k','readwrite').objectStore('k').put({batches:S.batches,cur:S.cur,lin:S.lin},'s')}catch(e){}}
+// ===== التخزين المحلي (يعمل بدون إنترنت) =====
+function idbOpen(name){return new Promise(r=>{try{const q=indexedDB.open(name,1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
+function idbGet(d){return new Promise(r=>{try{const g=d.transaction('k').objectStore('k').get('s');g.onsuccess=()=>r(g.result);g.onerror=()=>r(null)}catch(e){r(null)}})}
+async function loadLocal(){
+  db=await idbOpen('sn21v_smart');
+  let d=db?await idbGet(db):null;
+  if(!d||!d.batches){const o=await idbOpen('sn21v_local');const od=o?await idbGet(o):null;if(od&&od.batches)d=od}
+  return d;
+}
+async function saveLocal(){try{if(db){await new Promise(res=>{const tx=db.transaction('k','readwrite');tx.objectStore('k').put({batches:S.batches,cur:S.cur,lin:S.lin,linTs:S.linTs||0,del:S.del||{},fb:S.fb||null},'s');tx.oncomplete=res;tx.onerror=res;tx.onabort=res})}}catch(e){}}
+async function save(){await saveLocal();pushAll()}
 
-function toast(t){const e=$('#toast');e.textContent=t||'تم الحفظ محلياً ✓';e.style.opacity=1;clearTimeout(window._t);window._t=setTimeout(()=>e.style.opacity=0,1400)}
+// ===== المزامنة السحابية (Firebase) =====
+// كل شجرة وثيقة مستقلة، والأحدث يفوز، والحذف يُنقل كعلامة حذف. لا يُستبدل شيء كاملاً.
+const FB={apiKey:"AIzaSyBebFd_a8WzVaP59hYzS8b960",authDomain:"sn21-app.firebaseapp.com",projectId:"sn21-app",storageBucket:"sn21-app.firebasestorage.app",messagingSenderId:"1029366522195",appId:"1:1029366522195:web:d44adf5cfa7"};
+const FBV='10.8.0';
+let fs=null,F=null,cloudTs={},cloudLinTs=0,cloudStarted=false;
+const cfg=()=>S.fb||FB;
+function fbOk(c){return !!(c.apiKey&&c.apiKey.length>=35&&c.projectId&&c.appId&&/^1:\d+:web:[0-9a-f]{16,}$/.test(c.appId))}
+function fbInfo(){const c=cfg();return 'المشروع: '+(c.projectId||'-')+(fbOk(c)?'':' ⚠️ الإعدادات ناقصة أو غير صحيحة')}
+function setStatus(t){const e=document.getElementById('syncStatus');if(e)e.textContent=t}
+function softR(){if(S.draft||S.ex||S.page=='l')return;R()}
+
+async function startCloud(){
+  if(cloudStarted||!navigator.onLine)return;
+  const c=cfg();
+  if(!fbOk(c)){setStatus('⚠️ إعدادات المزامنة ناقصة (الرئيسية ثم المزامنة السحابية)');return}
+  try{
+    const A=await import('https://www.gstatic.com/firebasejs/'+FBV+'/firebase-app.js');
+    const Fs=await import('https://www.gstatic.com/firebasejs/'+FBV+'/firebase-firestore.js');
+    fs=Fs.initializeFirestore(A.initializeApp(c),{experimentalAutoDetectLongPolling:true});
+    F=Fs;cloudStarted=true;
+    Fs.onSnapshot(Fs.collection(fs,'sn21_rows'),onRows,e=>setStatus('⚠️ تعذّرت المزامنة: '+(e.code||e.message)));
+    Fs.onSnapshot(Fs.doc(fs,'sn21_meta','lin'),onLin,()=>{});
+  }catch(e){setStatus('⚡ يعمل بدون إنترنت (محلي)')}
+}
+function pushRow(r){if(!F||!fs)return;cloudTs[r.id]=r.ts||1;F.setDoc(F.doc(fs,'sn21_rows',r.id),{ts:r.ts||1,deleted:false,data:JSON.stringify(r)}).catch(()=>{})}
+function pushDel(id,ts){if(!F||!fs)return;cloudTs[id]=ts;F.setDoc(F.doc(fs,'sn21_rows',id),{ts:ts,deleted:true,data:''}).catch(()=>{})}
+function pushLin(){if(!F||!fs)return;F.setDoc(F.doc(fs,'sn21_meta','lin'),{ts:S.linTs||Date.now(),data:JSON.stringify(S.lin||{})}).catch(()=>{})}
+function pushAll(){
+  if(!F||!fs){startCloud();return}
+  S.batches[0].rows.forEach(r=>{if(cloudTs[r.id]===undefined||cloudTs[r.id]<(r.ts||1))pushRow(r)});
+  Object.keys(S.del||{}).forEach(id=>{if(cloudTs[id]===undefined||cloudTs[id]<S.del[id])pushDel(id,S.del[id])});
+  if((S.linTs||0)>cloudLinTs)pushLin();
+}
+function onRows(snap){
+  const b=S.batches[0];let changed=false;
+  snap.forEach(d=>{
+    const x=d.data(),id=d.id,ts=x.ts||0;cloudTs[id]=ts;
+    const i=b.rows.findIndex(r=>r.id==id),loc=i>=0?b.rows[i]:null,tomb=(S.del||{})[id]||0;
+    if(x.deleted){
+      if(loc&&(loc.ts||0)<=ts){b.rows.splice(i,1);changed=true}
+      if(!(loc&&(loc.ts||0)>ts)&&tomb<ts){S.del[id]=ts;changed=true}
+    }else{
+      if(tomb>0&&tomb>=ts)return;
+      if(!loc||(loc.ts||0)<ts){
+        let r;try{r=JSON.parse(x.data)}catch(e){return}
+        r.id=id;r.ts=ts;
+        if(loc)b.rows[i]=r;else b.rows.push(r);
+        delete S.del[id];changed=true;
+      }
+    }
+  });
+  if(changed){b.rows.sort((p,q)=>((q.cr||q.ts||0)-(p.cr||p.ts||0)));saveLocal();softR()}
+  pushAll();
+  setStatus('🟢 متصل ومزامن سحابياً');
+}
+function onLin(snap){
+  if(!snap.exists()){if(S.lin&&Object.keys(S.lin).length)pushLin();return}
+  const x=snap.data(),ts=x.ts||0;cloudLinTs=ts;
+  if(ts>(S.linTs||0)){try{S.lin=JSON.parse(x.data);S.linTs=ts;saveLocal();softR()}catch(e){}}
+  else if((S.linTs||0)>ts)pushLin();
+}
+function svFb(){
+  const t=document.getElementById('fbtxt').value,o={};
+  for(const m of t.matchAll(/(\w+)\s*:\s*["']([^"']+)["']/g))o[m[1]]=m[2];
+  if(!(o.apiKey&&o.projectId&&o.appId)){note('لم أجد apiKey وprojectId وappId في النص. انسخ إعدادات Firebase كاملة.');return}
+  if(!fbOk(o)){note('الإعدادات تبدو ناقصة (مفتاح apiKey أو appId مقصوص). انسخها كاملة من Firebase.');return}
+  S.fb=o;saveLocal();note('تم الحفظ. أغلق التطبيق تماماً وافتحه من جديد لبدء المزامنة.');
+}
+
+function toast(t){const e=$('#toast');e.textContent=t||'تم الحفظ بنجاح ✓';e.style.opacity=1;clearTimeout(window._t);window._t=setTimeout(()=>e.style.opacity=0,1400)}
 function modal(h){$('#m').innerHTML='<div class="box">'+h+'</div>';$('#m').style.display='flex'}
 function cls(){$('#m').style.display='none'}
 function ask(t,yes,fn){window._f=fn;modal('<p>'+t+'</p><div class="bt"><button class="g" onclick="_f();cls()">'+yes+'</button><button class="o" onclick="cls()">إلغاء</button></div>')}
@@ -95,12 +173,12 @@ return `<div class="card${isNew?' new':''}" id="c_${i}"><div class="top"><input 
 <div class="acts"><button class="g" onclick="sv('${i}')">حفظ</button><button class="o" onclick="del('${i}')">${isNew?'إلغاء':'حذف'}</button>${isNew?'':'<button class="o" onclick="S.ex=null;R()">إغلاق</button>'}</div></div>`}
 
 function sv(id){const c=$('#c_'+id),g=k=>c.querySelector('[data-k="'+k+'"]').value,t=g('tree').trim();if(!t){c.querySelector('[data-k="tree"]').focus();toast('اكتب رقم الشجرة');return}
- const d={tree:t,lines:rd(c),pcsN:tot(rd(c),'عادي'),pcsL:tot(rd(c),'مبطن'),cast:num(g('cast')),vib:num(g('vib')),sold:num(g('sold')),info:g('info').trim()},b=cb();
- if(id=='new'){b.rows.unshift({id:uid(),img:P.new||'',...d});S.draft=false;delete P.new;save();R()}
- else{const r=b.rows.find(x=>x.id==id);Object.assign(r,d);if(P[id]!==undefined){r.img=P[id];delete P[id]}save();S.ex=null;R()}
+ const d={tree:t,lines:rd(c),pcsN:tot(rd(c),'عادي'),pcsL:tot(rd(c),'مبطن'),cast:num(g('cast')),vib:num(g('vib')),sold:num(g('sold')),info:g('info').trim(),ts:Date.now()},b=cb();
+ if(id=='new'){b.rows.unshift({id:uid(),cr:d.ts,img:P.new||'',...d});S.draft=false;delete P.new;save();R()}
+ else{let r=b.rows.find(x=>x.id==id);if(!r){r={id,cr:d.ts,img:''};b.rows.unshift(r)}Object.assign(r,d);delete S.del[id];if(P[id]!==undefined){r.img=P[id];delete P[id]}save();S.ex=null;R()}
  toast()}
 
-function del(id){if(id=='new'){S.draft=false;delete P.new;R();return}ask('حذف هذه الشجرة؟','نعم، احذف',()=>{const b=cb();b.rows=b.rows.filter(x=>x.id!=id);save();R()})}
+function del(id){if(id=='new'){S.draft=false;delete P.new;R();return}ask('حذف هذه الشجرة؟','نعم، احذف',()=>{const b=cb();b.rows=b.rows.filter(x=>x.id!=id);S.del[id]=Date.now();save();R()})}
 const sum=(a,k)=>Math.round(a.reduce((s,x)=>s+(x[k]||0),0)*1000)/1000;
 
 async function exp(){
@@ -125,17 +203,17 @@ async function exp(){
 }
 
 function imp(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{let d;try{d=JSON.parse(r.result)}catch(e){}
- if(!d||d.app!='sn21'||!Array.isArray(d.batches)||!d.batches.length){note('الملف غير صالح. اختر ملف نسخة احتياطية من SN 21.');return}
- ask('سيتم استبدال بياناتك الحالية بالنسخة ('+d.batches.length+' دفعة). متابعة؟','نعم، استعد',()=>{S.batches=d.batches;mig(S.batches);flat();if(d.lin)S.lin=d.lin;S.open=null;S.draft=false;save();R()})};r.readAsText(f)}
+ if(!d||d.app!='sn21'||!Array.isArray(d.batches)||!d.batches.length){note('الملف غير صالح.');return}
+ ask('استبدال البيانات الحالية (وعلى الأجهزة المتزامنة)؟','نعم',()=>{const now=Date.now();S.batches[0].rows.forEach(r=>{S.del[r.id]=now});S.batches=d.batches;mig(S.batches);flat();S.batches[0].rows.forEach(r=>{r.ts=now;delete S.del[r.id]});if(d.lin){S.lin=d.lin;S.linTs=now}S.ex=null;S.draft=false;save();R()})};r.readAsText(f)}
 
 function R(){const p=S.page;['b','s','l'].forEach((k,i)=>$('#n'+(i+1)).className=p==k?'on':'');p=='s'?Rs():p=='l'?Rl():Rb2()}
 function Rs(){$('#n1').className='';$('#n2').className='on';
  const rows=S.batches.flatMap(x=>x.rows),n=sum(rows,'pcsN'),l=sum(rows,'pcsL');
  $('#app').innerHTML=`<div class="card big"><div class="l">قطع العمل العادي</div><b>${n}</b>${bk2(rows,'عادي')}</div><div class="card big"><div class="l">قطع العمل المبطن</div><b>${l}</b>${bk2(rows,'مبطن')}</div><div class="card big tot"><div class="l">إجمالي القطع</div><b>${Math.round((n+l)*1000)/1000}</b></div><p class="mut">من ${rows.length} شجرة</p>`}
 function flat(){if(S.batches.length>1)S.batches=[{id:S.batches[0].id,name:'العمل',rows:S.batches.flatMap(x=>x.rows)}];S.cur=S.batches[0].id}
-function clr(){ask('سيتم حذف كل الأشجار الحالية. صدّر نسخة احتياطية أولاً إن أردت. متابعة؟','نعم، امسح',()=>{S.batches[0].rows=[];S.ex=null;S.draft=false;save();R()})}
+function clr(){ask('سيتم حذف كل الأشجار من هذا الجهاز ومن الأجهزة المتزامنة. متابعة؟','نعم، امسح',()=>{const now=Date.now();S.batches[0].rows.forEach(r=>{S.del[r.id]=now});S.batches[0].rows=[];S.ex=null;S.draft=false;save();R()})}
 function Rb2(){$('#n1').className='on';$('#n2').className='';const b=S.batches[0];S.cur=b.id;
- $('#app').innerHTML=`<button class="g" style="width:100%" onclick="S.draft=true;S.ex=null;R();$('#c_new').scrollIntoView()">＋ إضافة شجرة</button><p class="mut" style="margin:10px 0 0">${b.rows.length} شجرة</p>`+(S.draft?card({id:'new'},true):'')+b.rows.map(r=>S.ex==r.id?card(r):mini(r)).join('')+(!S.draft&&!b.rows.length?'<p class="mut">لا توجد أشجار بعد. اضغط ＋ إضافة شجرة</p>':'')+`<div class="card"><h3>نسخة احتياطية</h3><div class="bt" style="margin:0"><button class="g" onclick="exp()">تصدير</button><label class="pb" style="flex:1;text-align:center;padding:10px 14px;font-size:16px">استعادة<input id="imp" type="file" accept=".json,application/json" onchange="imp(this)"></label></div><button class="o" style="width:100%;margin-top:8px" onclick="clr()">بدء صبة جديدة (مسح الأشجار)</button></div>`}
+ $('#app').innerHTML=`<button class="g" style="width:100%" onclick="S.draft=true;S.ex=null;R();$('#c_new').scrollIntoView()">＋ إضافة شجرة</button><p class="mut" style="margin:10px 0 0">${b.rows.length} شجرة</p>`+(S.draft?card({id:'new'},true):'')+b.rows.map(r=>S.ex==r.id?card(r):mini(r)).join('')+(!S.draft&&!b.rows.length?'<p class="mut">لا توجد أشجار بعد. اضغط ＋ إضافة شجرة</p>':'')+`<div class="card"><h3>المزامنة السحابية</h3><div style="font-size:12px;color:var(--mut);margin-bottom:6px">${fbInfo()}</div><textarea id="fbtxt" rows="4" placeholder="الصق هنا إعدادات Firebase (firebaseConfig) كاملة"></textarea><button class="g" style="width:100%;margin-top:8px" onclick="svFb()">حفظ إعدادات المزامنة</button></div><div class="card"><h3>نسخة احتياطية</h3><div class="bt" style="margin:0"><button class="g" onclick="exp()">تصدير</button><label class="pb" style="flex:1;text-align:center;padding:10px 14px;font-size:16px">استعادة<input id="imp" type="file" accept=".json,application/json" onchange="imp(this)"></label></div><button class="o" style="width:100%;margin-top:8px" onclick="clr()">بدء صبة جديدة (مسح الأشجار)</button></div>`}
 
 const TY=['خواتم','محابس','دبل'];
 function ln(l){return '<div class="ln"><select data-l="t">'+['',...TY].map(o=>'<option value="'+o+'"'+(o==(l.t||'')?' selected':'')+'>'+(l.t||o||'النوع')+'</option>').join('')+'</select><select data-l="m"><option'+(l.m!='مبطن'?' selected':'')+'>عادي</option><option'+(l.m=='مبطن'?' selected':'')+'>مبطن</option></select><input data-l="n" type="number" step="any" inputmode="decimal" placeholder="العدد" value="'+(l.n||'')+'"><button class="o x" onclick="this.parentNode.remove()">✕</button></div>'}
@@ -209,27 +287,28 @@ function svL(){
   })).filter(x => x.tp || x.sz || x.val);
 
   S.lin.d = new Date().toISOString().slice(0, 10);
+  S.linTs = Date.now();
   save();
   Rl();
   toast('تم حفظ قياسات ' + active + ' بنجاح ✓');
 }
 
-function mig(a){a.forEach(b=>b.rows.forEach(r=>{if(r.pcsN===undefined){const l=r.type=='مبطن';r.pcsN=l?0:(r.pcs||0);r.pcsL=l?(r.pcs||0):0}if(!r.lines){r.lines=[];if(r.pcsN||r.tN)r.lines.push({t:r.tN||'',m:'عادي',n:r.pcsN||0});if(r.pcsL||r.tL)r.lines.push({t:r.tL||'',m:'مبطن',n:r.pcsL||0})}}))}
+function mig(a){a.forEach(b=>b.rows.forEach(r=>{if(!r.ts)r.ts=1;if(r.pcsN===undefined){const l=r.type=='مبطن';r.pcsN=l?0:(r.pcs||0);r.pcsL=l?(r.pcs||0):0}if(!r.lines){r.lines=[];if(r.pcsN||r.tN)r.lines.push({t:r.tN||'',m:'عادي',n:r.pcsN||0});if(r.pcsL||r.tL)r.lines.push({t:r.tL||'',m:'مبطن',n:r.pcsL||0})}}))}
 function mini(r){const t=Math.round(((r.cast||0)+(r.vib||0)+(r.sold||0))*1000)/1000;return `<div class="card mini" onclick="S.ex='${r.id}';R()">${r.img?`<img class="pv" alt="" src="${r.img}" style="width:48px;height:48px">`:''}<div style="flex:1"><b style="color:var(--gold);font-size:17px">شجرة ${esc(r.tree)}</b><div style="font-size:12px;color:var(--mut)">${lt(r)} · تلف ${t}</div></div><span style="color:var(--mut)">تعديل ‹</span></div>`}
 
-// التشغيل الفوري بدون الحاجة للإنترنت
+// التشغيل
 (async()=>{
-  const d=await load();
+  const d=await loadLocal();
   if(d&&d.batches&&d.batches.length){
-    S.batches=d.batches;
-    S.lin=d.lin||{};
-    mig(S.batches);
-    flat();
+    S.batches=d.batches;S.lin=d.lin||{};S.linTs=d.linTs||0;S.del=d.del||{};S.fb=d.fb||null;
+    mig(S.batches);flat();
   }else{
-    S.batches=[{id:uid(),name:'العمل',rows:[]}];
-    S.cur=S.batches[0].id;
+    S.batches=[{id:uid(),name:'العمل',rows:[]}];S.cur=S.batches[0].id;S.lin={};S.del={};
   }
-  R();
+  R();saveLocal();
+  window.addEventListener('online',()=>{setStatus('⏳ جارٍ الاتصال...');startCloud()});
+  window.addEventListener('offline',()=>setStatus('⚡ يعمل بدون إنترنت (محلي)'));
+  startCloud();
 })();
 </script>
 </body>
