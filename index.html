@@ -1,314 +1,689 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>SN 21 - مزامنة ذكية</title>
-<link rel="stylesheet" href="fonts.css">
-
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#070605">
+<title>SN 975</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='40' r='18' fill='none' stroke='%23d4af37' stroke-width='5'/%3E%3Cpolygon points='32,6 42,20 32,28 22,20' fill='%23c45c4a' stroke='%23d4af37' stroke-width='2'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23070605'/%3E%3Ccircle cx='32' cy='42' r='16' fill='none' stroke='%23d4af37' stroke-width='5'/%3E%3Cpolygon points='32,10 41,22 32,29 23,22' fill='%23c45c4a' stroke='%23d4af37' stroke-width='2'/%3E%3C/svg%3E">
 <style>
-:root{--bg1:#000;--bg2:#000;--card:rgba(255,255,255,.07);--line:rgba(245,197,24,.45);--gold:#f5c518;--txt:#f6f1e1;--mut:#b5ad98;--red:#ff8a98;--grn:#7be0a4;color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;background:#000;color:var(--txt);font-family:Tajawal,system-ui,sans-serif;padding:0 14px 96px}
-h1{font-family:'Reem Kufi',serif;color:var(--gold);font-size:46px;letter-spacing:3px;margin:18px 0 0;text-align:center;direction:ltr}
-.sub{text-align:center;color:var(--grn);font-size:13px;margin:0 0 14px;border-bottom:1px solid var(--line);padding-bottom:12px;font-weight:bold}
-button,select,input,textarea{font:inherit;color:var(--txt)}
-button{border:0;border-radius:10px;padding:10px 14px;cursor:pointer}
-.g{background:var(--gold);color:#2a1a00;font-weight:700}
-.o{background:transparent;border:1px solid var(--line);color:var(--gold)}
-select,input,textarea{background:rgba(255,255,255,.07);border:1px solid var(--line);border-radius:10px;padding:9px;width:100%}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:12px 0}
-.card.new{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold)}
-.top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}
-.tr{font-weight:700;font-size:18px;color:var(--gold);width:55%}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
-.g4 input{padding:8px 4px;text-align:center}
-label.l{display:block;font-size:12px;color:var(--mut);margin:0 0 2px}
-.im{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.pv{width:64px;height:64px;object-fit:cover;border-radius:10px}
-.pb{border:1px solid var(--line);border-radius:10px;padding:8px 12px;color:var(--gold);font-size:13px;cursor:pointer}
-.acts{display:flex;gap:8px;margin-top:10px}.acts .g{flex:1}
-.mut{color:var(--mut);text-align:center;margin:30px 0}
-.row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-.row:last-child{border:0}
-h3{margin:0 0 8px;color:var(--gold)}
-.tot{background:rgba(224,184,74,.16)}
-nav{position:fixed;inset:auto 0 0 0;display:flex;background:#000;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
-nav button{flex:1;background:none;color:var(--mut);border-radius:0;padding:15px}
-nav button.on{color:var(--gold);font-weight:700}
-#m{position:fixed;inset:0;background:rgba(0,0,0,.65);display:none;align-items:flex-end;justify-content:center;z-index:9}
-.box{background:#0d0d0d;border:1px solid var(--line);border-radius:18px 18px 0 0;padding:16px;width:100%;max-width:520px}
-.bt{display:flex;gap:8px;margin-top:14px}.bt button{flex:1}
-#toast{position:fixed;bottom:calc(66px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--gold);color:#2a1a00;padding:7px 18px;border-radius:20px;font-size:14px;font-weight:700;opacity:0;transition:opacity .2s;pointer-events:none;z-index:8}
-.mini{display:flex;align-items:center;gap:10px;cursor:pointer}.bc{cursor:pointer}.pb{background:transparent}
-.top .tr{width:100%}
-.big{text-align:center}.big b{display:block;font-size:46px;color:var(--gold);line-height:1.1}.big .l{font-size:14px;color:var(--mut)}
-.pb{position:relative;overflow:hidden}.pb input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
-.ln{display:grid;grid-template-columns:1.2fr 1fr .8fr auto;gap:6px;margin-bottom:6px}.ln select,.ln input{padding:8px 4px}.x{padding:6px 10px}
-.meas-row{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5px;margin-bottom:6px}
-.meas-row input, .meas-row select{padding:8px 4px;font-size:13px}
-.tab-bar{display:flex;gap:5px;margin:10px 0}
-.tab-bar button{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--line);color:var(--mut);border-radius:10px;padding:10px;font-weight:700}
-.tab-bar button.active{background:var(--gold);color:#2a1a00;border-color:var(--gold)}
-.sentence-preview{background:rgba(0,0,0,.4);border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin-top:8px;font-size:13px;color:var(--gold);text-align:center;direction:rtl}
+:root{
+  --ink:#070605; --panel:#14110c; --cream:#f4ead2;
+  --gold:#d4af37; --muted:#b59a62; --garnet:#c45c4a; --good:#3dba6e;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body{
+  background:var(--ink);color:var(--cream);
+  font-family:Tahoma,"Segoe UI",Arial,sans-serif;font-weight:600;
+  padding:0 12px 28px;overflow-x:hidden;
+}
+button,input,select{font:inherit}
+.header{text-align:center;padding:12px 0 4px}
+.title{font-size:28px;font-weight:800;color:var(--gold);letter-spacing:2px}
+.kicker{font-size:11px;color:var(--muted);letter-spacing:2px}
+.rule{height:1px;background:rgba(212,175,55,.28);margin:8px auto 0;max-width:380px}
+
+/* تبويبات أعلى الصفحة */
+.tabs{
+  position:sticky;top:0;z-index:50;
+  display:grid;grid-template-columns:1fr 1fr 1fr;
+  background:var(--ink);
+  border-bottom:1.5px solid rgba(212,175,55,.35);
+  margin:0 -12px 12px;
+}
+.tab{
+  padding:12px 4px;text-align:center;color:var(--muted);
+  font-size:14px;font-weight:700;cursor:pointer;border:0;background:transparent;
+  min-height:46px;touch-action:manipulation;
+  border-bottom:2px solid transparent;
+}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+.page{display:none;max-width:480px;margin:0 auto}
+.page.active{display:block}
+
+.btn{
+  background:var(--panel);color:var(--gold);border:1.5px solid rgba(212,175,55,.4);
+  border-radius:12px;padding:10px 14px;font-size:14px;font-weight:700;
+  cursor:pointer;min-height:44px;touch-action:manipulation;margin:4px 4px 4px 0;
+}
+.btn:active{opacity:.85}
+.btn.primary{background:var(--gold);color:var(--ink);border-color:var(--gold)}
+.btn.danger{border-color:var(--garnet);color:var(--garnet)}
+.btn.small{padding:8px 10px;font-size:13px;min-height:40px}
+.btn.block{width:100%;margin:0}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+label.f{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
+input,select{
+  background:var(--ink);color:var(--cream);border:1.5px solid rgba(212,175,55,.32);
+  border-radius:12px;padding:10px 11px;font-size:15px;font-weight:600;
+  width:100%;min-height:44px;outline:none;
+}
+input:focus,select:focus{border-color:var(--gold)}
+input[type="number"],input[type="date"]{direction:ltr;text-align:center}
+input[type="checkbox"]{width:18px;height:18px;accent-color:var(--gold)}
+.card{
+  background:var(--panel);border:1.5px solid rgba(212,175,55,.32);
+  border-radius:16px;padding:12px 14px;margin:10px 0;
+}
+.card h3{margin:0 0 4px;color:var(--gold);font-size:20px;font-weight:800}
+.cardSummary{font-size:13px;color:#ddd;margin-top:2px;line-height:1.55}
+.item{border:1.5px solid rgba(212,175,55,.28);border-radius:12px;padding:8px;margin:8px 0;background:var(--ink)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+@media (max-width:400px){.grid3{grid-template-columns:1fr 1fr}}
+.finishbox{border:1.5px solid rgba(212,175,55,.28);border-radius:10px;padding:6px}
+.finishbox label{display:flex;align-items:center;gap:6px;font-size:13px;min-height:32px}
+.reqbox{
+  border:2px solid var(--gold);border-radius:14px;background:rgba(212,175,55,.08);
+  padding:8px 14px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;
+}
+.reqbox label.f{margin:0;color:var(--gold);font-size:13px;font-weight:800}
+.reqbox input{
+  width:96px;font-size:22px;font-weight:800;text-align:center;
+  border-color:var(--gold);min-height:40px;padding:4px 6px;
+}
+.logo{display:flex;justify-content:center;margin-bottom:2px}
+.logo svg{width:54px;height:54px}
+.syncbar{display:flex;justify-content:space-between;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);margin:-4px 0 10px;padding:6px 10px;
+  border:1px solid rgba(212,175,55,.2);border-radius:10px}
+.syncbar.ok{color:#8fcf8f}
+.syncbar.err{color:#e08a8a}
+.syncbar .btn.small{padding:4px 10px;font-size:12px}
+.daterow{display:flex;align-items:center;gap:4px;direction:ltr}
+.daterow .dpart{width:auto;flex:1;min-width:0;text-align:center;padding:10px 4px}
+.daterow .dsep{color:var(--gold);font-weight:800;font-size:16px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{border:1px solid rgba(212,175,55,.28);padding:10px 6px;text-align:center}
+th{background:var(--ink);color:var(--gold)}
+.tblwrap{overflow-x:auto}
+.tbl2block{margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(212,175,55,.2)}
+.tbl-title{color:var(--gold);font-weight:800;margin:0 0 8px;font-size:17px;text-align:right}
+.sumbox{display:flex;justify-content:center;margin:6px 0;gap:6px;flex-wrap:wrap}
+.sumitem{
+  background:var(--ink);border:1.5px solid var(--gold);border-radius:12px;
+  padding:8px 16px;text-align:center;min-width:90px;
+}
+.sumitem b{display:block;color:var(--gold);font-size:22px}
+.sumitem span{font-size:11px;color:var(--muted)}
+.sumitem.ready{border-color:var(--good)}
+.sumitem.ready b{color:var(--good)}
+.arrow{text-align:center;color:var(--gold);margin:4px 0;font-size:16px}
+.loss-in{
+  width:76px;min-height:40px;text-align:center;direction:ltr;
+  background:var(--ink);color:var(--cream);border:1.5px solid rgba(212,175,55,.45);
+  border-radius:10px;padding:6px 8px;font-size:15px;font-weight:700;
+}
+.measline{
+  background:var(--ink);border:1.5px solid rgba(212,175,55,.28);
+  border-radius:12px;padding:10px 12px;margin:6px 0;font-size:13px;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.measline .val{color:var(--gold);font-size:20px;font-weight:800}
+.muted{color:var(--muted);font-size:13px;text-align:center;margin:14px 0}
+.segrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin:8px 0}
+.segbtn{
+  padding:10px;text-align:center;border:1.5px solid rgba(212,175,55,.32);
+  border-radius:12px;color:var(--cream);font-weight:700;cursor:pointer;
+  font-size:13px;background:var(--panel);min-height:42px;touch-action:manipulation;
+}
+.segbtn.active{background:var(--gold);color:var(--ink)}
+.photothumb{width:40px;height:40px;object-fit:cover;border-radius:8px;border:1.5px solid var(--gold)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.actions .span2{grid-column:1/-1}
+#toast{
+  position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);
+  background:var(--panel);color:var(--cream);padding:10px 16px;border-radius:12px;
+  border:1.5px solid var(--gold);z-index:200;font-size:13px;max-width:90%;
+  text-align:center;display:none;
+}
+.hero{text-align:center;padding:22px 14px}
+.hero h2{color:var(--gold);font-size:24px;margin:0 0 6px}
+.hero p{color:var(--muted);font-size:13px;line-height:1.5;margin:0 0 14px}
 </style>
 </head>
 <body>
-<h1>SN 21</h1>
-<p id="syncStatus" class="sub">⚡ يعمل محلياً (جاهز للمزامنة عند الاتصال)</p>
-<div id="app"></div>
+<div class="header">
+  <div class="logo"><svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="32" cy="40" r="18" fill="none" stroke="#d4af37" stroke-width="5"/>
+    <polygon points="32,6 42,20 32,28 22,20" fill="#c45c4a" stroke="#d4af37" stroke-width="2"/>
+  </svg></div>
+  <div class="kicker">دفتر الصب</div>
+  <div class="title">SN 975</div>
+  <div class="rule"></div>
+</div>
+<div class="syncbar" id="syncBar">
+  <span id="syncStatus">غير متزامن</span>
+  <button type="button" id="btnSyncNow" class="btn small">مزامنة الآن</button>
+</div>
 
-<nav>
-  <button id="n1" onclick="go('b')">بدء العمل</button>
-  <button id="n2" onclick="go('s')">المجموع</button>
-  <button id="n3" onclick="go('l')">القياسات</button>
-</nav>
-<div id="m"></div><div id="toast"></div>
+<div class="tabs" id="navTabs">
+  <button type="button" class="tab active" data-p="1">العمل</button>
+  <button type="button" class="tab" data-p="2">التجميع</button>
+  <button type="button" class="tab" data-p="3">القياسات</button>
+</div>
+
+<div class="page active" id="p1">
+  <div id="pourControls"></div>
+  <div id="treesList"></div>
+  <div class="actions" id="page1Actions"></div>
+</div>
+<div class="page" id="p2"><div id="tables2"></div></div>
+<div class="page" id="p3">
+  <button type="button" class="btn primary block" id="btnAddMeasure">+ إضافة قياس جديد</button>
+  <div class="segrow" id="cat3"></div>
+  <div id="entries3"></div>
+  <div id="measureList" style="margin-top:10px"></div>
+</div>
+<div id="toast"></div>
 
 <script>
-let S={batches:[],cur:null,page:'b',scope:'all',draft:false,activeTab:'خواتم'},db;
-const P={},$=s=>document.querySelector(s),uid=()=>Math.random().toString(36).slice(2,9),num=v=>parseFloat(v)||0;
-const esc=t=>String(t==null?'':t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const cb=()=>S.batches.find(b=>b.id==S.cur)||S.batches[0];
-
-// ===== التخزين المحلي (يعمل بدون إنترنت) =====
-function idbOpen(name){return new Promise(r=>{try{const q=indexedDB.open(name,1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}})}
-function idbGet(d){return new Promise(r=>{try{const g=d.transaction('k').objectStore('k').get('s');g.onsuccess=()=>r(g.result);g.onerror=()=>r(null)}catch(e){r(null)}})}
-async function loadLocal(){
-  db=await idbOpen('sn21v_smart');
-  let d=db?await idbGet(db):null;
-  if(!d||!d.batches){const o=await idbOpen('sn21v_local');const od=o?await idbGet(o):null;if(od&&od.batches)d=od}
-  return d;
+(function(){
+"use strict";
+var TYPES=["محابس","خواتم","دبل"];
+var KEY="sn975_state_v2";
+var FIREBASE_DB_URL="https://sn975-47268-default-rtdb.europe-west1.firebasedatabase.app";
+var syncTimer=0, syncing=false;
+function setSyncStatus(txt,cls){
+  var bar=document.getElementById("syncBar"), s=document.getElementById("syncStatus");
+  if(!bar||!s) return;
+  s.textContent=txt;
+  bar.className="syncbar"+(cls?(" "+cls):"");
 }
-async function saveLocal(){try{if(db){await new Promise(res=>{const tx=db.transaction('k','readwrite');tx.objectStore('k').put({batches:S.batches,cur:S.cur,lin:S.lin,linTs:S.linTs||0,del:S.del||{},fb:S.fb||null},'s');tx.oncomplete=res;tx.onerror=res;tx.onabort=res})}}catch(e){}}
-async function save(){await saveLocal();pushAll()}
-
-// ===== المزامنة السحابية (Firebase) =====
-// كل شجرة وثيقة مستقلة، والأحدث يفوز، والحذف يُنقل كعلامة حذف. لا يُستبدل شيء كاملاً.
-const FB={apiKey:"AIzaSyBebFd_a8WzVaP59hYzS8b960",authDomain:"sn21-app.firebaseapp.com",projectId:"sn21-app",storageBucket:"sn21-app.firebasestorage.app",messagingSenderId:"1029366522195",appId:"1:1029366522195:web:d44adf5cfa7"};
-const FBV='10.8.0';
-let fs=null,F=null,cloudTs={},cloudLinTs=0,cloudStarted=false;
-const cfg=()=>S.fb||FB;
-function fbOk(c){return !!(c.apiKey&&c.apiKey.length>=35&&c.projectId&&c.appId&&/^1:\d+:web:[0-9a-f]{16,}$/.test(c.appId))}
-function fbInfo(){const c=cfg();return 'المشروع: '+(c.projectId||'-')+(fbOk(c)?'':' ⚠️ الإعدادات ناقصة أو غير صحيحة')}
-function setStatus(t){const e=document.getElementById('syncStatus');if(e)e.textContent=t}
-function softR(){if(S.draft||S.ex||S.page=='l')return;R()}
-
-async function startCloud(){
-  if(cloudStarted||!navigator.onLine)return;
-  const c=cfg();
-  if(!fbOk(c)){setStatus('⚠️ إعدادات المزامنة ناقصة (الرئيسية ثم المزامنة السحابية)');return}
-  try{
-    const A=await import('https://www.gstatic.com/firebasejs/'+FBV+'/firebase-app.js');
-    const Fs=await import('https://www.gstatic.com/firebasejs/'+FBV+'/firebase-firestore.js');
-    fs=Fs.initializeFirestore(A.initializeApp(c),{experimentalAutoDetectLongPolling:true});
-    F=Fs;cloudStarted=true;
-    Fs.onSnapshot(Fs.collection(fs,'sn21_rows'),onRows,e=>setStatus('⚠️ تعذّرت المزامنة: '+(e.code||e.message)));
-    Fs.onSnapshot(Fs.doc(fs,'sn21_meta','lin'),onLin,()=>{});
-  }catch(e){setStatus('⚡ يعمل بدون إنترنت (محلي)')}
+function pushToCloud(){
+  if(syncing) return;
+  syncing=true;
+  setSyncStatus("جارِ الحفظ في السحابة…");
+  fetch(FIREBASE_DB_URL+"/state.json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)})
+    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); setSyncStatus("تمت المزامنة ✓","ok"); })
+    .catch(function(){ setSyncStatus("تعذّرت المزامنة (تحقق من الإنترنت)","err"); })
+    .then(function(){ syncing=false; });
 }
-function pushRow(r){if(!F||!fs)return;cloudTs[r.id]=r.ts||1;F.setDoc(F.doc(fs,'sn21_rows',r.id),{ts:r.ts||1,deleted:false,data:JSON.stringify(r)}).catch(()=>{})}
-function pushDel(id,ts){if(!F||!fs)return;cloudTs[id]=ts;F.setDoc(F.doc(fs,'sn21_rows',id),{ts:ts,deleted:true,data:''}).catch(()=>{})}
-function pushLin(){if(!F||!fs)return;F.setDoc(F.doc(fs,'sn21_meta','lin'),{ts:S.linTs||Date.now(),data:JSON.stringify(S.lin||{})}).catch(()=>{})}
-function pushAll(){
-  if(!F||!fs){startCloud();return}
-  S.batches[0].rows.forEach(r=>{if(cloudTs[r.id]===undefined||cloudTs[r.id]<(r.ts||1))pushRow(r)});
-  Object.keys(S.del||{}).forEach(id=>{if(cloudTs[id]===undefined||cloudTs[id]<S.del[id])pushDel(id,S.del[id])});
-  if((S.linTs||0)>cloudLinTs)pushLin();
-}
-function onRows(snap){
-  const b=S.batches[0];let changed=false;
-  snap.forEach(d=>{
-    const x=d.data(),id=d.id,ts=x.ts||0;cloudTs[id]=ts;
-    const i=b.rows.findIndex(r=>r.id==id),loc=i>=0?b.rows[i]:null,tomb=(S.del||{})[id]||0;
-    if(x.deleted){
-      if(loc&&(loc.ts||0)<=ts){b.rows.splice(i,1);changed=true}
-      if(!(loc&&(loc.ts||0)>ts)&&tomb<ts){S.del[id]=ts;changed=true}
-    }else{
-      if(tomb>0&&tomb>=ts)return;
-      if(!loc||(loc.ts||0)<ts){
-        let r;try{r=JSON.parse(x.data)}catch(e){return}
-        r.id=id;r.ts=ts;
-        if(loc)b.rows[i]=r;else b.rows.push(r);
-        delete S.del[id];changed=true;
+function pullFromCloud(onDone){
+  setSyncStatus("جارِ التحقق من السحابة…");
+  fetch(FIREBASE_DB_URL+"/state.json")
+    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
+    .then(function(cloud){
+      var changed=false;
+      if(cloud&&typeof cloud==="object"){
+        var cloudTs=cloud._ts||0, localTs=state._ts||0;
+        if(cloudTs>localTs){ state=cloud; save(false); changed=true; }
       }
-    }
-  });
-  if(changed){b.rows.sort((p,q)=>((q.cr||q.ts||0)-(p.cr||p.ts||0)));saveLocal();softR()}
-  pushAll();
-  setStatus('🟢 متصل ومزامن سحابياً');
+      setSyncStatus("متصل بالسحابة ✓","ok");
+      if(onDone) onDone(changed);
+    })
+    .catch(function(){
+      setSyncStatus("بدون اتصال بالسحابة (العمل محليًا)","err");
+      if(onDone) onDone(false);
+    });
 }
-function onLin(snap){
-  if(!snap.exists()){if(S.lin&&Object.keys(S.lin).length)pushLin();return}
-  const x=snap.data(),ts=x.ts||0;cloudLinTs=ts;
-  if(ts>(S.linTs||0)){try{S.lin=JSON.parse(x.data);S.linTs=ts;saveLocal();softR()}catch(e){}}
-  else if((S.linTs||0)>ts)pushLin();
+function queuePush(){ clearTimeout(syncTimer); syncTimer=setTimeout(pushToCloud,1200); }
+var state, selectedCategory="محابس", pending=[], toastTimer=0;
+
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
+function today(){
+  var d=new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 }
-function svFb(){
-  const t=document.getElementById('fbtxt').value,o={};
-  for(const m of t.matchAll(/(\w+)\s*:\s*["']([^"']+)["']/g))o[m[1]]=m[2];
-  if(!(o.apiKey&&o.projectId&&o.appId)){note('لم أجد apiKey وprojectId وappId في النص. انسخ إعدادات Firebase كاملة.');return}
-  if(!fbOk(o)){note('الإعدادات تبدو ناقصة (مفتاح apiKey أو appId مقصوص). انسخها كاملة من Firebase.');return}
-  S.fb=o;saveLocal();note('تم الحفظ. أغلق التطبيق تماماً وافتحه من جديد لبدء المزامنة.');
+function splitDate(iso){
+  if(!iso) return {y:"",m:"",d:""};
+  var p=iso.split("-");
+  return {y:p[0]||"",m:p[1]||"",d:p[2]||""};
 }
+function joinDate(y,m,d){
+  y=String(y||"").replace(/\D/g,"");
+  m=String(m||"").replace(/\D/g,"");
+  d=String(d||"").replace(/\D/g,"");
+  if(!y&&!m&&!d) return "";
+  if(m.length===1) m="0"+m;
+  if(d.length===1) d="0"+d;
+  return y+"-"+m+"-"+d;
+}
+function n(v){var x=parseFloat(v);return isFinite(x)?x:0}
+function emptyFinish(){return {checked:false,count:0,lossLaham:0,lossHazaz:0}}
+function emptyItem(){return {id:uid(),type:"محابس",count:0,reqCount:0,normal:emptyFinish(),padded:emptyFinish()}}
+function emptyState(){return {pouring:{active:false,date:""},trees:[],nextTreeNum:1,measurements:[],_ts:0}}
 
-function toast(t){const e=$('#toast');e.textContent=t||'تم الحفظ بنجاح ✓';e.style.opacity=1;clearTimeout(window._t);window._t=setTimeout(()=>e.style.opacity=0,1400)}
-function modal(h){$('#m').innerHTML='<div class="box">'+h+'</div>';$('#m').style.display='flex'}
-function cls(){$('#m').style.display='none'}
-function ask(t,yes,fn){window._f=fn;modal('<p>'+t+'</p><div class="bt"><button class="g" onclick="_f();cls()">'+yes+'</button><button class="o" onclick="cls()">إلغاء</button></div>')}
-function note(t){modal('<p>'+t+'</p><div class="bt"><button class="o" onclick="cls()">حسناً</button></div>')}
-function go(p){S.page=p;R()}
-
-function shrink(f){return new Promise(r=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const k=Math.min(1,480/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*k;c.height=i.height*k;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL('image/jpeg',.7))};i.onerror=()=>r('');i.src=u})}
-async function pimg(id,inp){if(!inp.files[0])return;const d=await shrink(inp.files[0]);P[id]=d;const p=$('#c_'+id+' .pv');p.src=d;p.style.display='block'}
-
-function card(r,isNew){const i=r.id,f=(k,l)=>`<div><label class="l">${l}</label><input data-k="${k}" type="number" step="any" inputmode="decimal" value="${r[k]||''}"></div>`;
-return `<div class="card${isNew?' new':''}" id="c_${i}"><div class="top"><input class="tr" data-k="tree" value="${esc(r.tree)}" placeholder="رقم الشجرة"></div>
-<label class="l">القطع (النوع، عادي أو مبطن، العدد)</label><div class="lns">${(r.lines&&r.lines.length?r.lines:[{m:'عادي'}]).map(ln).join('')}</div><button class="o" style="margin:2px 0 10px" onclick="addL('${i}')">＋ سطر</button><div class="g4" style="grid-template-columns:repeat(3,1fr)">${f('cast','تلف الصبة')}${f('vib','تلف الهزاز')}${f('sold','تلف اللحام')}</div>
-<div class="im"><img class="pv" alt="" src="${r.img||''}" style="display:${r.img?'block':'none'}"><label class="pb">📷 صورة العمل<input type="file" accept="image/*" onchange="pimg('${i}',this)"></label></div>
-<textarea data-k="info" rows="2" placeholder="معلومات">${esc(r.info)}</textarea>
-
-<div class="acts"><button class="g" onclick="sv('${i}')">حفظ</button><button class="o" onclick="del('${i}')">${isNew?'إلغاء':'حذف'}</button>${isNew?'':'<button class="o" onclick="S.ex=null;R()">إغلاق</button>'}</div></div>`}
-
-function sv(id){const c=$('#c_'+id),g=k=>c.querySelector('[data-k="'+k+'"]').value,t=g('tree').trim();if(!t){c.querySelector('[data-k="tree"]').focus();toast('اكتب رقم الشجرة');return}
- const d={tree:t,lines:rd(c),pcsN:tot(rd(c),'عادي'),pcsL:tot(rd(c),'مبطن'),cast:num(g('cast')),vib:num(g('vib')),sold:num(g('sold')),info:g('info').trim(),ts:Date.now()},b=cb();
- if(id=='new'){b.rows.unshift({id:uid(),cr:d.ts,img:P.new||'',...d});S.draft=false;delete P.new;save();R()}
- else{let r=b.rows.find(x=>x.id==id);if(!r){r={id,cr:d.ts,img:''};b.rows.unshift(r)}Object.assign(r,d);delete S.del[id];if(P[id]!==undefined){r.img=P[id];delete P[id]}save();S.ex=null;R()}
- toast()}
-
-function del(id){if(id=='new'){S.draft=false;delete P.new;R();return}ask('حذف هذه الشجرة؟','نعم، احذف',()=>{const b=cb();b.rows=b.rows.filter(x=>x.id!=id);S.del[id]=Date.now();save();R()})}
-const sum=(a,k)=>Math.round(a.reduce((s,x)=>s+(x[k]||0),0)*1000)/1000;
-
-async function exp(){
-  const json=JSON.stringify({app:'sn21',batches:S.batches,lin:S.lin});
-  const name='sn21-backup-'+new Date().toISOString().slice(0,10)+'.json';
+function load(){
+  state=emptyState();
   try{
-    const C=window.Capacitor;
-    if(C&&C.isNativePlatform&&C.isNativePlatform()){
-      const {Filesystem,Share}=C.Plugins;
-      const r=await Filesystem.writeFile({path:name,data:json,directory:'CACHE',encoding:'utf8'});
-      await Share.share({title:name,url:r.uri,dialogTitle:'حفظ النسخة الاحتياطية'});
-      return;
+    var raw=localStorage.getItem(KEY);
+    if(!raw) return;
+    var d=JSON.parse(raw);
+    if(d&&typeof d==="object"){
+      if(d.pouring) state.pouring=d.pouring;
+      if(Array.isArray(d.trees)) state.trees=d.trees;
+      if(d.nextTreeNum) state.nextTreeNum=d.nextTreeNum;
+      if(Array.isArray(d.measurements)) state.measurements=d.measurements;
+      if(d._ts) state._ts=d._ts;
     }
-    const a=document.createElement('a');
-    a.href='data:text/json;charset=utf-8,'+encodeURIComponent(json);
-    a.download=name;document.body.appendChild(a);a.click();a.remove();
-    toast('تم تصدير النسخة الاحتياطية ✓');
-  }catch(e){
-    if(String(e&&e.message||e).toLowerCase().includes('cancel'))return;
-    note('تعذّر حفظ الملف.');
+  }catch(e){}
+}
+function save(push){
+  state._ts=Date.now();
+  try{localStorage.setItem(KEY,JSON.stringify(state))}
+  catch(e){toast("تعذّر الحفظ")}
+  if(push!==false) queuePush();
+}
+function toast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;t.style.display="block";
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.style.display="none"},2000);
+}
+function findTree(id){
+  for(var i=0;i<state.trees.length;i++) if(String(state.trees[i].id)===String(id)) return state.trees[i];
+  return null;
+}
+
+document.getElementById("navTabs").addEventListener("click",function(e){
+  var btn=e.target.closest(".tab"); if(!btn) return;
+  e.preventDefault();
+  var tabs=document.querySelectorAll(".tab"), pages=document.querySelectorAll(".page");
+  for(var i=0;i<tabs.length;i++) tabs[i].classList.remove("active");
+  for(var j=0;j<pages.length;j++) pages[j].classList.remove("active");
+  btn.classList.add("active");
+  document.getElementById("p"+btn.getAttribute("data-p")).classList.add("active");
+  if(btn.getAttribute("data-p")==="2") renderTables2();
+  if(btn.getAttribute("data-p")==="3") renderPage3();
+});
+
+function treeSummary(tree){
+  var parts=[];
+  for(var i=0;i<tree.items.length;i++){
+    var it=tree.items[i], bits=[];
+    if(it.normal.checked) bits.push("عادي "+it.normal.count);
+    if(it.padded.checked) bits.push("مبطن "+it.padded.count);
+    parts.push(it.type+" ("+it.count+")"+(bits.length?" — "+bits.join(" / "):""));
+  }
+  return parts.join(" · ")||"لا توجد بيانات بعد";
+}
+
+function renderPourControls(){
+  var el=document.getElementById("pourControls");
+  if(!state.pouring.active){
+    el.innerHTML=
+      '<div class="card hero">'+
+        '<h2>صبة جديدة</h2>'+
+        '<p>ابدأ الصبة، ثم سجّل كل شجرة بعددها وتشطيبها.</p>'+
+        '<button type="button" class="btn primary block" id="btnStartPour">بدء صبة</button>'+
+      '</div>';
+    document.getElementById("btnStartPour").onclick=function(e){
+      e.preventDefault();
+      state.pouring.active=true; state.pouring.date=today();
+      save(); renderPage1();
+    };
+    return;
+  }
+  var dparts=splitDate(state.pouring.date);
+  el.innerHTML=
+    '<div class="row">'+
+      '<div style="flex:1"><label class="f">تاريخ الصبة</label>'+
+        '<div class="daterow">'+
+          '<input type="number" id="pdDay" class="dpart" placeholder="يوم" min="1" max="31" value="'+dparts.d+'">'+
+          '<span class="dsep">/</span>'+
+          '<input type="number" id="pdMonth" class="dpart" placeholder="شهر" min="1" max="12" value="'+dparts.m+'">'+
+          '<span class="dsep">/</span>'+
+          '<input type="number" id="pdYear" class="dpart" placeholder="سنة" min="2000" max="2100" value="'+dparts.y+'">'+
+        '</div></div>'+
+      '<button type="button" class="btn primary" id="btnAddTree" style="margin-top:16px">+ إضافة شجرة</button>'+
+    '</div>';
+  function onDatePartChange(){
+    state.pouring.date=joinDate(
+      document.getElementById("pdYear").value,
+      document.getElementById("pdMonth").value,
+      document.getElementById("pdDay").value
+    );
+    save();
+  }
+  document.getElementById("pdDay").onchange=onDatePartChange;
+  document.getElementById("pdMonth").onchange=onDatePartChange;
+  document.getElementById("pdYear").onchange=onDatePartChange;
+  document.getElementById("btnAddTree").onclick=function(e){
+    e.preventDefault();
+    state.trees.push({id:uid(),number:state.nextTreeNum++,castingLoss:0,photo:null,collapsed:false,items:[emptyItem()]});
+    save(); renderTrees(); renderActions();
+  };
+}
+
+function renderTrees(){
+  var el=document.getElementById("treesList");
+  el.innerHTML="";
+  if(state.pouring.active&&state.trees.length===0){
+    el.innerHTML='<p class="muted">لا توجد أشجار بعد. أضف أول شجرة لهذه الصبة.</p>';
+    return;
+  }
+  for(var ti=0;ti<state.trees.length;ti++){
+    (function(tree){
+      var card=document.createElement("div");
+      card.className="card";
+      if(tree.collapsed){
+        card.innerHTML=
+          '<div class="row" style="justify-content:space-between;align-items:flex-start;margin:0">'+
+            '<div style="flex:1;cursor:pointer" class="tog">'+
+              '<h3>شجرة رقم '+tree.number+(tree.photo?' <img class="photothumb" src="'+tree.photo+'">':'')+'</h3>'+
+              '<div class="cardSummary">'+treeSummary(tree)+'</div>'+
+              (tree.castingLoss?'<div class="cardSummary">تلف الصبة: '+tree.castingLoss+'</div>':'')+
+            '</div>'+
+            '<button type="button" class="btn small danger del">✕</button>'+
+          '</div>';
+        card.querySelector(".tog").onclick=function(){tree.collapsed=false;save();renderTrees()};
+        bindConfirm(card.querySelector(".del"),"تأكيد؟","✕",function(){
+          state.trees=state.trees.filter(function(t){return String(t.id)!==String(tree.id)});
+          save();renderTrees();renderActions();
+        });
+      } else {
+        card.innerHTML=
+          '<div class="row" style="justify-content:space-between">'+
+            '<div style="flex:1"><label class="f">رقم الشجرة</label><input type="number" class="tnum" value="'+tree.number+'"></div>'+
+            (tree.photo?'<img class="photothumb" src="'+tree.photo+'">':'')+
+            '<button type="button" class="btn small tcam">📷</button>'+
+            '<button type="button" class="btn small tgal">🖼</button>'+
+            '<button type="button" class="btn small danger del">✕</button>'+
+          '</div>'+
+          '<div class="items"></div>'+
+          '<div class="row">'+
+            '<button type="button" class="btn small tadd">+ إضافة سطر</button>'+
+            '<button type="button" class="btn primary small tsave">حفظ</button>'+
+          '</div>';
+        card.querySelector(".tnum").onchange=function(){tree.number=n(this.value);save()};
+        card.querySelector(".tcam").onclick=function(e){e.preventDefault();pickPhoto(tree,"camera")};
+        card.querySelector(".tgal").onclick=function(e){e.preventDefault();pickPhoto(tree,"gallery")};
+        card.querySelector(".tadd").onclick=function(e){e.preventDefault();tree.items.push(emptyItem());save();renderTrees()};
+        card.querySelector(".tsave").onclick=function(e){e.preventDefault();tree.collapsed=true;save();renderTrees()};
+        bindConfirm(card.querySelector(".del"),"تأكيد؟","✕",function(){
+          state.trees=state.trees.filter(function(t){return String(t.id)!==String(tree.id)});
+          save();renderTrees();renderActions();
+        });
+        renderItems(card.querySelector(".items"),tree);
+      }
+      el.appendChild(card);
+    })(state.trees[ti]);
   }
 }
 
-function imp(inp){const f=inp.files[0];inp.value='';if(!f)return;const r=new FileReader();r.onload=()=>{let d;try{d=JSON.parse(r.result)}catch(e){}
- if(!d||d.app!='sn21'||!Array.isArray(d.batches)||!d.batches.length){note('الملف غير صالح.');return}
- ask('استبدال البيانات الحالية (وعلى الأجهزة المتزامنة)؟','نعم',()=>{const now=Date.now();S.batches[0].rows.forEach(r=>{S.del[r.id]=now});S.batches=d.batches;mig(S.batches);flat();S.batches[0].rows.forEach(r=>{r.ts=now;delete S.del[r.id]});if(d.lin){S.lin=d.lin;S.linTs=now}S.ex=null;S.draft=false;save();R()})};r.readAsText(f)}
-
-function R(){const p=S.page;['b','s','l'].forEach((k,i)=>$('#n'+(i+1)).className=p==k?'on':'');p=='s'?Rs():p=='l'?Rl():Rb2()}
-function Rs(){$('#n1').className='';$('#n2').className='on';
- const rows=S.batches.flatMap(x=>x.rows),n=sum(rows,'pcsN'),l=sum(rows,'pcsL');
- $('#app').innerHTML=`<div class="card big"><div class="l">قطع العمل العادي</div><b>${n}</b>${bk2(rows,'عادي')}</div><div class="card big"><div class="l">قطع العمل المبطن</div><b>${l}</b>${bk2(rows,'مبطن')}</div><div class="card big tot"><div class="l">إجمالي القطع</div><b>${Math.round((n+l)*1000)/1000}</b></div><p class="mut">من ${rows.length} شجرة</p>`}
-function flat(){if(S.batches.length>1)S.batches=[{id:S.batches[0].id,name:'العمل',rows:S.batches.flatMap(x=>x.rows)}];S.cur=S.batches[0].id}
-function clr(){ask('سيتم حذف كل الأشجار من هذا الجهاز ومن الأجهزة المتزامنة. متابعة؟','نعم، امسح',()=>{const now=Date.now();S.batches[0].rows.forEach(r=>{S.del[r.id]=now});S.batches[0].rows=[];S.ex=null;S.draft=false;save();R()})}
-function Rb2(){$('#n1').className='on';$('#n2').className='';const b=S.batches[0];S.cur=b.id;
- $('#app').innerHTML=`<button class="g" style="width:100%" onclick="S.draft=true;S.ex=null;R();$('#c_new').scrollIntoView()">＋ إضافة شجرة</button><p class="mut" style="margin:10px 0 0">${b.rows.length} شجرة</p>`+(S.draft?card({id:'new'},true):'')+b.rows.map(r=>S.ex==r.id?card(r):mini(r)).join('')+(!S.draft&&!b.rows.length?'<p class="mut">لا توجد أشجار بعد. اضغط ＋ إضافة شجرة</p>':'')+`<div class="card"><h3>المزامنة السحابية</h3><div style="font-size:12px;color:var(--mut);margin-bottom:6px">${fbInfo()}</div><textarea id="fbtxt" rows="4" placeholder="الصق هنا إعدادات Firebase (firebaseConfig) كاملة"></textarea><button class="g" style="width:100%;margin-top:8px" onclick="svFb()">حفظ إعدادات المزامنة</button></div><div class="card"><h3>نسخة احتياطية</h3><div class="bt" style="margin:0"><button class="g" onclick="exp()">تصدير</button><label class="pb" style="flex:1;text-align:center;padding:10px 14px;font-size:16px">استعادة<input id="imp" type="file" accept=".json,application/json" onchange="imp(this)"></label></div><button class="o" style="width:100%;margin-top:8px" onclick="clr()">بدء صبة جديدة (مسح الأشجار)</button></div>`}
-
-const TY=['خواتم','محابس','دبل'];
-function ln(l){return '<div class="ln"><select data-l="t">'+['',...TY].map(o=>'<option value="'+o+'"'+(o==(l.t||'')?' selected':'')+'>'+(l.t||o||'النوع')+'</option>').join('')+'</select><select data-l="m"><option'+(l.m!='مبطن'?' selected':'')+'>عادي</option><option'+(l.m=='مبطن'?' selected':'')+'>مبطن</option></select><input data-l="n" type="number" step="any" inputmode="decimal" placeholder="العدد" value="'+(l.n||'')+'"><button class="o x" onclick="this.parentNode.remove()">✕</button></div>'}
-function addL(id){$('#c_'+id+' .lns').insertAdjacentHTML('beforeend',ln({m:'عادي'}))}
-function rd(c){return [...c.querySelectorAll('.ln')].map(e=>({t:e.querySelector('[data-l=t]').value,m:e.querySelector('[data-l=m]').value,n:num(e.querySelector('[data-l=n]').value)})).filter(l=>l.n||l.t)}
-function tot(ls,m){return sum(ls.filter(l=>l.m==m),'n')}
-function lt(r){return (r.lines||[]).map(l=>l.m+' '+l.n+' '+(l.t||'')).join(' · ')||'بدون قطع'}
-function bk2(rows,m){const ls=rows.flatMap(r=>r.lines||[]).filter(l=>l.m==m),o=TY.map(t=>[t,sum(ls.filter(l=>l.t==t),'n')]).filter(x=>x[1]),u=sum(ls.filter(l=>!TY.includes(l.t)),'n');if(u)o.push(['غير محدد',u]);return o.map(x=>'<div class="row"><span>'+x[0]+'</span><b>'+x[1]+'</b></div>').join('')}
-
-const SIZES = ['', 'صغير', 'وسط', 'كبير'];
-const MEASURES = ['', '5.3', '5.4', '5.5', '5.6', '5.7', '5.8', '5.9', '6', '6.1', '6.2', '6.3', '6.4', '6.5'];
-
-function Rl(){
-  const v = S.lin || {};
-  const active = S.activeTab || 'خواتم';
-
-  let h = `<h2 style="color:var(--gold);text-align:center;margin:8px 0 4px">القياسات والأنواع</h2>`;
-  h += `<div class="tab-bar">
-    ${TY.map(t => `<button class="${active === t ? 'active' : ''}" onclick="S.activeTab='${t}';Rl()">${t}</button>`).join('')}
-  </div>`;
-
-  let items = (v[active] && Array.isArray(v[active])) ? v[active] : [{tp:'', sz:'', val:''}];
-  
-  h += `<div class="card">
-    <div class="top"><h3 style="margin:0;color:var(--gold);font-size:18px">${active}</h3></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:5px;font-size:11px;color:var(--mut);margin-bottom:4px;padding:0 2px">
-      <span>النوع</span><span>الحجم</span><span>القياس</span><span></span>
-    </div>
-    <div id="meas_container">
-      ${items.map(it => measRow(it)).join('')}
-    </div>
-    <button class="o" style="width:100%;margin-top:6px" onclick="addMeasRow()">＋ إضافة قياس جديد لـ ${active}</button>
-  </div>`;
-
-  let sentenceText = items.filter(x=>x.tp||x.sz||x.val).map(x => `${active} [نوع: ${x.tp||'-'} | حجم: ${x.sz||'-'} | قياس: ${x.val||'-'}]`).join(' ، ');
-  h += `<div class="sentence-preview"><span style="display:block;font-size:11px;color:var(--mut)">معاينة الجملة المحفوظة:</span>${sentenceText || 'لا توجد قياسات مضافة بعد'}</div>`;
-
-  h += `<button class="g" style="width:100%;margin-top:12px" onclick="svL()">حفظ قياسات (${active})</button>
-        <p class="mut" style="margin:10px 0 0">${v.d ? 'آخر حفظ: ' + esc(v.d) : ''}</p>`;
-  
-  $('#app').innerHTML = h;
-}
-
-function measRow(it){
-  return `<div class="meas-row">
-    <input type="text" placeholder="النوع" data-k="tp" value="${esc(it.tp||'')}" />
-    <select data-k="sz">
-      ${SIZES.map(s => `<option value="${s}" ${s === (it.sz||'') ? 'selected' : ''}>${s || 'اختر الحجم'}</option>`).join('')}
-    </select>
-    <select data-k="val">
-      ${MEASURES.map(m => `<option value="${m}" ${m === (it.val||'') ? 'selected' : ''}>${m || 'اختر القياس'}</option>`).join('')}
-    </select>
-    <button class="o x" onclick="this.parentNode.remove();">✕</button>
-  </div>`;
-}
-
-function addMeasRow(){
-  const container = document.getElementById('meas_container');
-  container.insertAdjacentHTML('beforeend', measRow({tp:'', sz:'', val:''}));
-}
-
-function svL(){
-  if(!S.lin) S.lin = {};
-  const active = S.activeTab || 'خواتم';
-  const rows = [...document.querySelectorAll('div.meas-row')];
-  
-  S.lin[active] = rows.map(r => ({
-    tp: r.querySelector('[data-k="tp"]').value.trim(),
-    sz: r.querySelector('[data-k="sz"]').value,
-    val: r.querySelector('[data-k="val"]').value
-  })).filter(x => x.tp || x.sz || x.val);
-
-  S.lin.d = new Date().toISOString().slice(0, 10);
-  S.linTs = Date.now();
-  save();
-  Rl();
-  toast('تم حفظ قياسات ' + active + ' بنجاح ✓');
-}
-
-function mig(a){a.forEach(b=>b.rows.forEach(r=>{if(!r.ts)r.ts=1;if(r.pcsN===undefined){const l=r.type=='مبطن';r.pcsN=l?0:(r.pcs||0);r.pcsL=l?(r.pcs||0):0}if(!r.lines){r.lines=[];if(r.pcsN||r.tN)r.lines.push({t:r.tN||'',m:'عادي',n:r.pcsN||0});if(r.pcsL||r.tL)r.lines.push({t:r.tL||'',m:'مبطن',n:r.pcsL||0})}}))}
-function mini(r){const t=Math.round(((r.cast||0)+(r.vib||0)+(r.sold||0))*1000)/1000;return `<div class="card mini" onclick="S.ex='${r.id}';R()">${r.img?`<img class="pv" alt="" src="${r.img}" style="width:48px;height:48px">`:''}<div style="flex:1"><b style="color:var(--gold);font-size:17px">شجرة ${esc(r.tree)}</b><div style="font-size:12px;color:var(--mut)">${lt(r)} · تلف ${t}</div></div><span style="color:var(--mut)">تعديل ‹</span></div>`}
-
-// التشغيل
-(async()=>{
-  const d=await loadLocal();
-  if(d&&d.batches&&d.batches.length){
-    S.batches=d.batches;S.lin=d.lin||{};S.linTs=d.linTs||0;S.del=d.del||{};S.fb=d.fb||null;
-    mig(S.batches);flat();
-  }else{
-    S.batches=[{id:uid(),name:'العمل',rows:[]}];S.cur=S.batches[0].id;S.lin={};S.del={};
+function renderItems(wrap,tree){
+  wrap.innerHTML="";
+  for(var i=0;i<tree.items.length;i++){
+    (function(it,idx){
+      var d=document.createElement("div");
+      d.className="item";
+      var opts="";
+      for(var k=0;k<TYPES.length;k++) opts+='<option'+(it.type===TYPES[k]?' selected':'')+'>'+TYPES[k]+'</option>';
+      d.innerHTML=
+        '<div class="grid3">'+
+          '<div><label class="f">نوع الشجرة</label><select class="itype">'+opts+'</select></div>'+
+          '<div><label class="f">العدد</label><input type="number" class="icnt" value="'+it.count+'"></div>'+
+          '<div><label class="f">تلف الصبة</label><input type="number" class="iloss" value="'+tree.castingLoss+'"></div>'+
+        '</div>'+
+        '<div class="reqbox"><label class="f">العدد المطلوب ★</label><input type="number" class="ireq" value="'+it.reqCount+'"></div>'+
+        '<div class="grid2" style="margin-top:6px">'+
+          '<div class="finishbox"><label><input type="checkbox" class="nchk"'+(it.normal.checked?' checked':'')+'> عادي</label>'+
+            '<input type="number" class="ncnt" placeholder="العدد" value="'+it.normal.count+'"></div>'+
+          '<div class="finishbox"><label><input type="checkbox" class="pchk"'+(it.padded.checked?' checked':'')+'> مبطن</label>'+
+            '<input type="number" class="pcnt" placeholder="العدد" value="'+it.padded.count+'"></div>'+
+        '</div>'+
+        (tree.items.length>1?'<button type="button" class="btn small danger idel" style="margin-top:6px">حذف السطر</button>':'');
+      d.querySelector(".itype").onchange=function(){it.type=this.value;save()};
+      d.querySelector(".icnt").onchange=function(){it.count=n(this.value);save()};
+      d.querySelector(".iloss").onchange=function(){tree.castingLoss=n(this.value);save()};
+      d.querySelector(".ireq").onchange=function(){it.reqCount=n(this.value);save()};
+      d.querySelector(".nchk").onchange=function(){it.normal.checked=this.checked;save()};
+      d.querySelector(".ncnt").onchange=function(){it.normal.count=n(this.value);save()};
+      d.querySelector(".pchk").onchange=function(){it.padded.checked=this.checked;save()};
+      d.querySelector(".pcnt").onchange=function(){it.padded.count=n(this.value);save()};
+      var del=d.querySelector(".idel");
+      if(del) del.onclick=function(e){e.preventDefault();tree.items.splice(idx,1);save();renderTrees()};
+      wrap.appendChild(d);
+    })(tree.items[i],i);
   }
-  R();saveLocal();
-  window.addEventListener('online',()=>{setStatus('⏳ جارٍ الاتصال...');startCloud()});
-  window.addEventListener('offline',()=>setStatus('⚡ يعمل بدون إنترنت (محلي)'));
-  startCloud();
+}
+
+function bindConfirm(btn,armedText,normalText,action){
+  var armed=false,timer=0;
+  btn.onclick=function(e){
+    e.preventDefault();
+    if(armed){clearTimeout(timer);armed=false;action();return}
+    armed=true;btn.textContent=armedText;
+    timer=setTimeout(function(){if(btn.isConnected){armed=false;btn.textContent=normalText}},2500);
+  };
+}
+
+function pickPhoto(tree,mode){
+  var input=document.createElement("input");
+  input.type="file"; input.accept="image/*";
+  if(mode==="camera") input.setAttribute("capture","environment");
+  input.onchange=function(){
+    var file=input.files&&input.files[0]; if(!file) return;
+    var r=new FileReader();
+    r.onload=function(){
+      var img=new Image();
+      img.onload=function(){
+        var max=640, sc=Math.min(1,max/Math.max(img.width,img.height));
+        var c=document.createElement("canvas");
+        c.width=Math.max(1,Math.round(img.width*sc));
+        c.height=Math.max(1,Math.round(img.height*sc));
+        c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+        tree.photo=c.toDataURL("image/jpeg",0.6);
+        save(); renderTrees();
+      };
+      img.onerror=function(){toast("تعذّر قراءة الصورة")};
+      img.src=r.result;
+    };
+    r.readAsDataURL(file);
+  };
+  input.click();
+}
+
+function renderActions(){
+  var el=document.getElementById("page1Actions");
+  var html='<button type="button" class="btn primary" id="btnExport">تصدير</button>'+
+    '<button type="button" class="btn" id="btnImport">استعادة</button>';
+  if(state.pouring.active){
+    html+='<button type="button" class="btn span2" id="btnNewPour">بدء صبة جديدة</button>'+
+      '<button type="button" class="btn danger span2" id="btnDelAll">حذف جميع الأشجار</button>';
+  }
+  el.innerHTML=html;
+  document.getElementById("btnExport").onclick=function(e){e.preventDefault();exportData()};
+  document.getElementById("btnImport").onclick=function(e){
+    e.preventDefault();
+    var input=document.createElement("input");
+    input.type="file"; input.accept=".json,application/json";
+    input.onchange=function(){
+      var file=input.files&&input.files[0]; if(!file) return;
+      var r=new FileReader();
+      r.onload=function(){
+        try{
+          var d=JSON.parse(r.result);
+          if(d.pouring) state.pouring=d.pouring;
+          if(Array.isArray(d.trees)) state.trees=d.trees;
+          if(d.nextTreeNum) state.nextTreeNum=d.nextTreeNum;
+          if(Array.isArray(d.measurements)) state.measurements=d.measurements;
+          save(); renderAll(); toast("تمت الاستعادة ✓");
+        }catch(err){toast("ملف غير صالح")}
+      };
+      r.readAsText(file);
+    };
+    input.click();
+  };
+  var np=document.getElementById("btnNewPour");
+  if(np) bindConfirm(np,"تأكيد صبة جديدة","بدء صبة جديدة",function(){
+    state.trees=[]; state.nextTreeNum=1; state.pouring={active:false,date:""}; save(); renderPage1();
+  });
+  var da=document.getElementById("btnDelAll");
+  if(da) bindConfirm(da,"تأكيد حذف الجميع","حذف جميع الأشجار",function(){
+    state.trees=[]; state.nextTreeNum=1; save(); renderPage1();
+  });
+}
+
+function exportData(){
+  var blob=new Blob([JSON.stringify({pouring:state.pouring,trees:state.trees,nextTreeNum:state.nextTreeNum,measurements:state.measurements})],{type:"application/json"});
+  var a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="SN975_"+(state.pouring.date||"export")+".json";
+  a.click(); URL.revokeObjectURL(a.href); toast("تم التصدير ✓");
+}
+
+/* ===== التجميع: صف واحد مجمع بدون أرقام الأشجار ===== */
+function collectGroup(type, finish){
+  var items=[];
+  for(var a=0;a<state.trees.length;a++){
+    var tree=state.trees[a];
+    for(var b=0;b<tree.items.length;b++){
+      var it=tree.items[b];
+      if(it.type===type && it[finish] && it[finish].checked) items.push(it);
+    }
+  }
+  return items;
+}
+function setGroupLoss(items, finish, field, value){
+  for(var i=0;i<items.length;i++){
+    items[i][finish][field] = (i===0 ? value : 0);
+  }
+}
+function renderTables2(){
+  var el=document.getElementById("tables2");
+  el.innerHTML="";
+  var any=false;
+  for(var ti=0;ti<TYPES.length;ti++){
+    var type=TYPES[ti];
+    for(var fi=0;fi<2;fi++){
+      var finish=fi===0?"normal":"padded";
+      var items=collectGroup(type, finish);
+      if(!items.length) continue;
+      any=true;
+      var req=0, laham=0, hazaz=0;
+      for(var r=0;r<items.length;r++){
+        req += items[r][finish].count||0;
+        laham += items[r][finish].lossLaham||0;
+        if(finish==="padded") hazaz += items[r].padded.lossHazaz||0;
+      }
+      var ready=req-laham-hazaz;
+      var box=document.createElement("div");
+      box.className="tbl2block";
+      var html='<div class="tbl-title">'+type+(finish==="normal"?" عادي":" مبطن")+'</div>'+
+        '<div class="sumbox"><div class="sumitem"><b>'+req+'</b><span>العدد المطلوب</span></div></div>'+
+        '<div class="arrow">↓</div>'+
+        '<div class="tblwrap"><table><tr><th>العدد</th>'+
+        (finish==="padded"?"<th>تلف هزاز</th>":"")+
+        '<th>تلف لحام</th></tr><tr>'+
+        '<td><b>'+req+'</b></td>';
+      if(finish==="padded"){
+        html+='<td><input type="number" class="loss-in g-loss" value="'+hazaz+
+          '" data-type="'+type+'" data-fin="padded" data-f="lossHazaz"></td>';
+      }
+      html+='<td><input type="number" class="loss-in g-loss" value="'+laham+
+        '" data-type="'+type+'" data-fin="'+finish+'" data-f="lossLaham"></td>'+
+        '</tr></table></div>'+
+        '<div class="arrow">↓</div>'+
+        '<div class="sumbox"><div class="sumitem ready"><b>'+ready+'</b><span>العدد الجاهز</span></div></div>';
+      box.innerHTML=html;
+      el.appendChild(box);
+    }
+  }
+  if(!any){
+    el.innerHTML='<p class="muted">لا توجد بيانات — أضف أشجاراً وحدد التشطيب في صفحة العمل.</p>';
+    return;
+  }
+  var inputs=el.querySelectorAll(".g-loss");
+  for(var i=0;i<inputs.length;i++){
+    inputs[i].onchange=function(){
+      var type=this.getAttribute("data-type");
+      var finish=this.getAttribute("data-fin");
+      var field=this.getAttribute("data-f");
+      var items=collectGroup(type, finish);
+      setGroupLoss(items, finish, field, n(this.value));
+      save();
+      renderTables2();
+    };
+  }
+}
+
+/* page 3 */
+function measureOptions(){
+  var out=[]; for(var v=5.5;v<=6.5+1e-9;v+=0.1) out.push(v.toFixed(1)); return out;
+}
+function renderPage3(){
+  var cat=document.getElementById("cat3"), h="";
+  for(var i=0;i<TYPES.length;i++){
+    h+='<button type="button" class="segbtn'+(TYPES[i]===selectedCategory?" active":"")+
+      '" data-cat="'+TYPES[i]+'">'+TYPES[i]+'</button>';
+  }
+  cat.innerHTML=h;
+  var segs=cat.querySelectorAll(".segbtn");
+  for(var s=0;s<segs.length;s++){
+    segs[s].onclick=function(e){e.preventDefault();selectedCategory=this.getAttribute("data-cat");renderPage3()};
+  }
+  renderPendingAndList();
+}
+document.getElementById("btnAddMeasure").onclick=function(e){
+  e.preventDefault();
+  pending.push({id:"p"+uid(),category:selectedCategory,freeText:"",size:"كبير",measure:"5.5"});
+  renderPendingAndList();
+};
+function renderPendingAndList(){
+  var wrap=document.getElementById("entries3");
+  wrap.innerHTML="";
+  for(var i=0;i<pending.length;i++){
+    if(pending[i].category!==selectedCategory) continue;
+    (function(p){
+      var d=document.createElement("div");
+      d.className="item";
+      var sizes=["كبير","وسط","صغير"], so="", mo="", opts=measureOptions();
+      for(var a=0;a<sizes.length;a++) so+='<option'+(p.size===sizes[a]?' selected':'')+'>'+sizes[a]+'</option>';
+      for(var b=0;b<opts.length;b++) mo+='<option'+(p.measure===opts[b]?' selected':'')+'>'+opts[b]+'</option>';
+      d.innerHTML=
+        '<div class="grid3">'+
+          '<div><label class="f">النوع</label><input class="pt" value="'+(p.freeText||"")+'"></div>'+
+          '<div><label class="f">الحجم</label><select class="ps">'+so+'</select></div>'+
+          '<div><label class="f">القياس</label><select class="pm">'+mo+'</select></div>'+
+        '</div>'+
+        '<div class="row" style="margin-top:6px">'+
+          '<button type="button" class="btn primary small psv">حفظ</button>'+
+          '<button type="button" class="btn danger small prm">حذف</button></div>';
+      d.querySelector(".pt").oninput=function(){p.freeText=this.value};
+      d.querySelector(".ps").onchange=function(){p.size=this.value};
+      d.querySelector(".pm").onchange=function(){p.measure=this.value};
+      d.querySelector(".psv").onclick=function(e){
+        e.preventDefault();
+        state.measurements.push({id:uid(),category:p.category,freeText:p.freeText,size:p.size,measure:p.measure});
+        pending=pending.filter(function(x){return x.id!==p.id});
+        save(); renderPendingAndList();
+      };
+      d.querySelector(".prm").onclick=function(e){
+        e.preventDefault();
+        pending=pending.filter(function(x){return x.id!==p.id});
+        renderPendingAndList();
+      };
+      wrap.appendChild(d);
+    })(pending[i]);
+  }
+  var list=document.getElementById("measureList");
+  list.innerHTML="";
+  var items=[], hasPending=false;
+  for(var m=0;m<state.measurements.length;m++) if(state.measurements[m].category===selectedCategory) items.push(state.measurements[m]);
+  for(var p=0;p<pending.length;p++) if(pending[p].category===selectedCategory) hasPending=true;
+  if(!items.length&&!hasPending) list.innerHTML='<p class="muted">لا توجد قياسات بعد لهذا النوع</p>';
+  for(var x=0;x<items.length;x++){
+    var line=document.createElement("div");
+    line.className="measline";
+    line.innerHTML='<span>'+items[x].category+(items[x].freeText?" "+items[x].freeText:"")+" "+items[x].size+
+      '</span><span class="val">'+items[x].measure+'</span>';
+    list.appendChild(line);
+  }
+}
+
+function renderPage1(){ renderPourControls(); renderTrees(); renderActions(); }
+function renderAll(){ renderPage1(); renderTables2(); renderPage3(); }
+
+load();
+renderAll();
+pullFromCloud(function(changed){ if(changed) renderAll(); });
+document.getElementById("btnSyncNow").onclick=function(){
+  pullFromCloud(function(changed){ if(changed){ renderAll(); toast("تم تحديث البيانات من السحابة"); } else { pushToCloud(); } });
+};
 })();
 </script>
 </body>
