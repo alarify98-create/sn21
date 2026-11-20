@@ -91,6 +91,7 @@ input[type="checkbox"]{width:18px;height:18px;accent-color:var(--gold)}
   border:1px solid rgba(212,175,55,.2);border-radius:10px}
 .syncbar.ok{color:#8fcf8f}
 .syncbar.err{color:#e08a8a}
+.syncbar.pending{color:var(--gold)}
 .syncbar .btn.small{padding:4px 10px;font-size:12px}
 .daterow{display:flex;align-items:center;gap:4px;direction:ltr}
 .daterow .dpart{width:auto;flex:1;min-width:0;text-align:center;padding:10px 4px}
@@ -155,7 +156,7 @@ th{background:var(--ink);color:var(--gold)}
   <div class="rule"></div>
 </div>
 <div class="syncbar" id="syncBar">
-  <span id="syncStatus">غير متزامن</span>
+  <span id="syncStatus">وضع أوفلاين (حفظ محلي)</span>
   <button type="button" id="btnSyncNow" class="btn small">مزامنة الآن</button>
 </div>
 
@@ -184,43 +185,117 @@ th{background:var(--ink);color:var(--gold)}
 "use strict";
 var TYPES=["محابس","خواتم","دبل"];
 var KEY="sn975_state_v2";
+var PENDING_KEY="sn975_dirty_v1";
 var FIREBASE_DB_URL="https://sn975-47268-default-rtdb.europe-west1.firebasedatabase.app";
-var syncTimer=0, syncing=false;
+var syncTimer=0, retryTimer=0, syncing=false, hasDirty=false;
+var state, selectedCategory="محابس", pending=[], toastTimer=0;
+
 function setSyncStatus(txt,cls){
   var bar=document.getElementById("syncBar"), s=document.getElementById("syncStatus");
   if(!bar||!s) return;
   s.textContent=txt;
   bar.className="syncbar"+(cls?(" "+cls):"");
 }
-function pushToCloud(){
+
+function markDirty(val){
+  hasDirty=!!val;
+  try{
+    if(hasDirty) localStorage.setItem(PENDING_KEY,"1");
+    else localStorage.removeItem(PENDING_KEY);
+  }catch(e){}
+}
+
+function loadDirtyFlag(){
+  try{ hasDirty = localStorage.getItem(PENDING_KEY)==="1"; }
+  catch(e){ hasDirty=false; }
+}
+
+function fetchWithTimeout(url, opts, ms){
+  opts = opts || {};
+  ms = ms || 5000;
+  if(typeof AbortController === "undefined") return fetch(url, opts);
+  var ctrl = new AbortController();
+  var timer = setTimeout(function(){ ctrl.abort(); }, ms);
+  opts.signal = ctrl.signal;
+  return fetch(url, opts).finally(function(){ clearTimeout(timer); });
+}
+
+function scheduleRetry(){
+  clearTimeout(retryTimer);
+  if(!hasDirty) return;
+  retryTimer=setTimeout(function(){
+    if(navigator.onLine && hasDirty) pushToCloud(false);
+  }, 15000);
+}
+
+function pushToCloud(showToastOnOk){
+  if(!navigator.onLine){
+    setSyncStatus("بدون إنترنت — محفوظ محليًا وسيُزامَن تلقائيًا","pending");
+    scheduleRetry();
+    return;
+  }
   if(syncing) return;
   syncing=true;
-  setSyncStatus("جارِ الحفظ في السحابة…");
-  fetch(FIREBASE_DB_URL+"/state.json",{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)})
-    .then(function(r){ if(!r.ok) throw new Error("http "+r.status); setSyncStatus("تمت المزامنة ✓","ok"); })
-    .catch(function(){ setSyncStatus("تعذّرت المزامنة (تحقق من الإنترنت)","err"); })
+  setSyncStatus("جارِ مزامنة التعديلات…","pending");
+  fetchWithTimeout(
+    FIREBASE_DB_URL+"/state.json",
+    {method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(state)},
+    5000
+  )
+    .then(function(r){
+      if(!r.ok) throw new Error("http "+r.status);
+      markDirty(false);
+      setSyncStatus("متزامن مع السحابة ✓","ok");
+      if(showToastOnOk) toast("تمت المزامنة مع السحابة ✓");
+    })
+    .catch(function(){
+      setSyncStatus("محفوظ محليًا (بانتظار توفر الشبكة)","pending");
+      scheduleRetry();
+    })
     .then(function(){ syncing=false; });
 }
+
 function pullFromCloud(onDone){
-  setSyncStatus("جارِ التحقق من السحابة…");
-  fetch(FIREBASE_DB_URL+"/state.json")
+  if(!navigator.onLine){
+    setSyncStatus(hasDirty ? "بدون إنترنت — توجد تعديلات بانتظار الرفع" : "وضع أوفلاين — البيانات محفوظة محليًا","pending");
+    if(onDone) onDone(false);
+    return;
+  }
+  setSyncStatus("جارِ التحقق من السحابة…","pending");
+  fetchWithTimeout(FIREBASE_DB_URL+"/state.json", {}, 5000)
     .then(function(r){ if(!r.ok) throw new Error("http "+r.status); return r.json(); })
     .then(function(cloud){
       var changed=false;
       if(cloud&&typeof cloud==="object"){
         var cloudTs=cloud._ts||0, localTs=state._ts||0;
-        if(cloudTs>localTs){ state=cloud; save(false); changed=true; }
+        if(cloudTs>localTs && !hasDirty){
+          state=cloud;
+          save(false, false);
+          changed=true;
+        }
       }
-      setSyncStatus("متصل بالسحابة ✓","ok");
+      if(hasDirty){
+        pushToCloud(false);
+      } else {
+        setSyncStatus("متصل ومتزامن ✓","ok");
+      }
       if(onDone) onDone(changed);
     })
     .catch(function(){
-      setSyncStatus("بدون اتصال بالسحابة (العمل محليًا)","err");
+      setSyncStatus(hasDirty ? "محفوظ محليًا — سيُرفع عند توفر الشبكة" : "وضع أوفلاين (حفظ محلي)","pending");
       if(onDone) onDone(false);
     });
 }
-function queuePush(){ clearTimeout(syncTimer); syncTimer=setTimeout(pushToCloud,1200); }
-var state, selectedCategory="محابس", pending=[], toastTimer=0;
+
+function queuePush(){
+  clearTimeout(syncTimer);
+  if(!navigator.onLine){
+    setSyncStatus("بدون إنترنت — محفوظ محليًا وسيُزامَن عند الاتصال","pending");
+    scheduleRetry();
+    return;
+  }
+  syncTimer=setTimeout(function(){ pushToCloud(false); }, 1000);
+}
 
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7)}
 function today(){
@@ -248,6 +323,7 @@ function emptyState(){return {pouring:{active:false,date:""},trees:[],nextTreeNu
 
 function load(){
   state=emptyState();
+  loadDirtyFlag();
   try{
     var raw=localStorage.getItem(KEY);
     if(!raw) return;
@@ -261,21 +337,20 @@ function load(){
     }
   }catch(e){}
 }
-function save(push){
+
+function save(push, markAsDirty){
   state._ts=Date.now();
   try{localStorage.setItem(KEY,JSON.stringify(state))}
-  catch(e){toast("تعذّر الحفظ")}
+  catch(e){toast("تعذّر الحفظ المحلي")}
+  if(markAsDirty!==false && push!==false) markDirty(true);
   if(push!==false) queuePush();
 }
+
 function toast(msg){
   var t=document.getElementById("toast");
   t.textContent=msg;t.style.display="block";
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){t.style.display="none"},2000);
-}
-function findTree(id){
-  for(var i=0;i<state.trees.length;i++) if(String(state.trees[i].id)===String(id)) return state.trees[i];
-  return null;
+  toastTimer=setTimeout(function(){t.style.display="none"},2200);
 }
 
 document.getElementById("navTabs").addEventListener("click",function(e){
@@ -526,7 +601,6 @@ function exportData(){
   a.click(); URL.revokeObjectURL(a.href); toast("تم التصدير ✓");
 }
 
-/* ===== التجميع: صف واحد مجمع بدون أرقام الأشجار ===== */
 function collectGroup(type, finish){
   var items=[];
   for(var a=0;a<state.trees.length;a++){
@@ -601,7 +675,6 @@ function renderTables2(){
   }
 }
 
-/* page 3 */
 function measureOptions(){
   var out=[]; for(var v=5.5;v<=6.5+1e-9;v+=0.1) out.push(v.toFixed(1)); return out;
 }
@@ -680,9 +753,30 @@ function renderAll(){ renderPage1(); renderTables2(); renderPage3(); }
 
 load();
 renderAll();
-pullFromCloud(function(changed){ if(changed) renderAll(); });
+setTimeout(function(){
+  pullFromCloud(function(changed){ if(changed) renderAll(); });
+}, 300);
+
+window.addEventListener("online", function(){
+  toast("عاد الاتصال — جارِ المزامنة…");
+  if(hasDirty) pushToCloud(true);
+  else pullFromCloud(function(changed){ if(changed) renderAll(); });
+});
+
+window.addEventListener("offline", function(){
+  setSyncStatus("وضع أوفلاين — يتم الحفظ محليًا تلقائيًا","pending");
+});
+
 document.getElementById("btnSyncNow").onclick=function(){
-  pullFromCloud(function(changed){ if(changed){ renderAll(); toast("تم تحديث البيانات من السحابة"); } else { pushToCloud(); } });
+  if(!navigator.onLine){
+    toast("لا يوجد اتصال بالإنترنت — بياناتك محفوظة محليًا");
+    return;
+  }
+  if(hasDirty) pushToCloud(true);
+  else pullFromCloud(function(changed){
+    if(changed){ renderAll(); toast("تم تحديث البيانات من السحابة ✓"); }
+    else { pushToCloud(true); }
+  });
 };
 })();
 </script>
